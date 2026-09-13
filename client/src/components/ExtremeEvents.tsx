@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getDataFreshness, filterWithinWeek, FreshnessBadge } from '../utils/freshness';
 
 interface ExtremeEvent {
   rank: number;
@@ -12,6 +13,8 @@ interface ExtremeEvent {
   rainfall: number;
   wind: number;
   severity_score: number;
+  freshness?: 'LIVE' | 'NEW';
+  is_within_week?: boolean;
   meteorological_cause?: string;
   impact_summary?: string;
   official_advisory?: string;
@@ -29,7 +32,9 @@ export default function ExtremeEvents() {
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/analytics/extremes');
-        setData(response.data);
+        // Strict 7-day retention guard: filter out any event older than 7 days
+        const validData = filterWithinWeek<ExtremeEvent>(response.data, (ev: any) => ev.date);
+        setData(validData);
       } catch (error) {
         console.error('Error fetching extreme events', error);
       }
@@ -53,6 +58,10 @@ export default function ExtremeEvents() {
 
   // Filter
   const filtered = data.filter(ev => {
+    const fresh = getDataFreshness(ev.date);
+    // Strict 7-day retention guard: filter out any event older than 7 days
+    if (!fresh.isWithinWeek) return false;
+
     if (filterType !== 'all' && ev.event_type !== filterType) return false;
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
@@ -86,7 +95,7 @@ export default function ExtremeEvents() {
             ⚡ Top National Meteorological Extreme Events
           </h3>
           <p style={{ color: '#94a3b8', fontSize: '0.84rem', marginTop: '4px' }}>
-            Real-time multi-dimensional severity scoring computed via Exasol analytical queries
+            Real-time severity scoring computed via Exasol analytical queries • <span style={{ color: '#38bdf8', fontWeight: 700 }}>Strict 7-Day Window (Live & New Only)</span>
           </p>
         </div>
 
@@ -239,6 +248,8 @@ export default function ExtremeEvents() {
                         💨 {ev.wind} km/h
                       </span>
                     </div>
+
+                    <FreshnessBadge timestamp={ev.date} size="sm" />
 
                     <span style={{
                       padding: '4px 10px',

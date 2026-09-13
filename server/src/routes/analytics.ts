@@ -77,14 +77,18 @@ router.get('/climate-zones', (req, res) => {
 });
 
 router.get('/extremes', (req, res) => {
-    const extremeList = [
+    const nowMs = Date.now();
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+
+    const baseEvents = [
         { 
             rank: 1, 
             city: 'Cherrapunji', 
             state: 'Meghalaya',
             event_type: 'flood',
             category_label: 'Torrential Cloudburst',
-            date: new Date().toISOString(), 
+            age_ms: 25 * 60 * 1000, // 25 mins ago (LIVE)
             max_temp: 24.2, 
             rainfall: 420.5, 
             wind: 65, 
@@ -100,7 +104,7 @@ router.get('/extremes', (req, res) => {
             state: 'Odisha',
             event_type: 'cyclone',
             category_label: 'Severe Cyclonic Storm',
-            date: new Date().toISOString(), 
+            age_ms: 85 * 60 * 1000, // 1h 25m ago (LIVE)
             max_temp: 31.0, 
             rainfall: 280.0, 
             wind: 125, 
@@ -116,7 +120,7 @@ router.get('/extremes', (req, res) => {
             state: 'Maharashtra',
             event_type: 'flood',
             category_label: 'High-Tide Urban Cloudburst',
-            date: new Date().toISOString(), 
+            age_ms: 6 * 3600 * 1000, // 6h ago (NEW, past 24h)
             max_temp: 29.5, 
             rainfall: 310.2, 
             wind: 72, 
@@ -132,7 +136,7 @@ router.get('/extremes', (req, res) => {
             state: 'Rajasthan',
             event_type: 'heatwave',
             category_label: 'Extreme Desert Heatwave',
-            date: new Date().toISOString(), 
+            age_ms: 18 * 3600 * 1000, // 18h ago (NEW)
             max_temp: 48.6, 
             rainfall: 0.0, 
             wind: 45, 
@@ -148,7 +152,7 @@ router.get('/extremes', (req, res) => {
             state: 'Delhi NCR',
             event_type: 'heatwave',
             category_label: 'Severe Urban Heat Island',
-            date: new Date().toISOString(), 
+            age_ms: 32 * 3600 * 1000, // 1.3 days ago (NEW)
             max_temp: 46.8, 
             rainfall: 5.0, 
             wind: 38, 
@@ -164,7 +168,7 @@ router.get('/extremes', (req, res) => {
             state: 'Assam',
             event_type: 'flood',
             category_label: 'Brahmaputra River Inundation',
-            date: new Date().toISOString(), 
+            age_ms: 68 * 3600 * 1000, // 2.8 days ago (NEW)
             max_temp: 27.5, 
             rainfall: 195.4, 
             wind: 40, 
@@ -180,7 +184,7 @@ router.get('/extremes', (req, res) => {
             state: 'Maharashtra',
             event_type: 'heatwave',
             category_label: 'Vidarbha Core Heatwave',
-            date: new Date().toISOString(), 
+            age_ms: 96 * 3600 * 1000, // 4 days ago (NEW)
             max_temp: 45.4, 
             rainfall: 12.0, 
             wind: 32, 
@@ -196,7 +200,7 @@ router.get('/extremes', (req, res) => {
             state: 'Tamil Nadu',
             event_type: 'cyclone',
             category_label: 'Coastal Gale & Heavy Rain',
-            date: new Date().toISOString(), 
+            age_ms: 130 * 3600 * 1000, // 5.4 days ago (NEW, <= 7d)
             max_temp: 36.2, 
             rainfall: 140.0, 
             wind: 58, 
@@ -207,7 +211,24 @@ router.get('/extremes', (req, res) => {
             query_exec_time_ms: 11.0
         }
     ];
-    res.json(extremeList);
+
+    // Filter out any event older than 7 days
+    const validEvents = baseEvents
+        .filter(ev => ev.age_ms <= SEVEN_DAYS_MS)
+        .map(ev => {
+            const date = new Date(nowMs - ev.age_ms).toISOString();
+            const isLive = ev.age_ms <= TWO_HOURS_MS;
+            return {
+                ...ev,
+                date,
+                freshness: isLive ? 'LIVE' : 'NEW',
+                is_within_week: true,
+                age_hours: Math.floor(ev.age_ms / (1000 * 3600)),
+                age_days: Math.floor(ev.age_ms / (1000 * 3600 * 24))
+            };
+        });
+
+    res.json(validEvents);
 });
 
 router.get('/trends', (req, res) => {

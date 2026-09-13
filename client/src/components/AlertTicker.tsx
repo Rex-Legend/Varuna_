@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
+import { getDataFreshness, filterWithinWeek, FreshnessBadge } from '../utils/freshness';
 
 interface Alert {
   alert_id?: number;
@@ -14,6 +15,8 @@ interface Alert {
   issued_at: string;
   valid_until?: string;
   is_active?: boolean;
+  freshness?: 'LIVE' | 'NEW';
+  is_within_week?: boolean;
   meteorological_cause?: string;
   synoptic_metrics?: {
     peak_wind_kmh?: number;
@@ -36,6 +39,7 @@ export default function AlertTicker() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [filter, setFilter] = useState<'ALL' | 'RED' | 'SEVERE' | 'MODERATE'>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [freshnessFilter, setFreshnessFilter] = useState<'ALL' | 'LIVE' | 'NEW'>('ALL');
   const [stateSearch, setStateSearch] = useState<string>('');
   const [activeBroadcastIdx, setActiveBroadcastIdx] = useState<number>(0);
   const [isBroadcastPaused, setIsBroadcastPaused] = useState<boolean>(false);
@@ -50,7 +54,9 @@ export default function AlertTicker() {
     try {
       const response = await axios.get('/api/alerts');
       if (Array.isArray(response.data) && response.data.length > 0) {
-        setAlerts(response.data);
+        // Strict 7-day retention guard: filter out any alert older than 7 days
+        const validAlerts = filterWithinWeek<Alert>(response.data, (a: any) => a.issued_at);
+        setAlerts(validAlerts);
         setLastUpdated(new Date());
       }
     } catch (error) {
@@ -64,7 +70,8 @@ export default function AlertTicker() {
     try {
       const response = await axios.post('/api/alerts/refresh');
       if (response.data?.alerts) {
-        setAlerts(response.data.alerts);
+        const validAlerts = filterWithinWeek<Alert>(response.data.alerts, (a: any) => a.issued_at);
+        setAlerts(validAlerts);
       } else {
         await fetchAlerts();
       }
@@ -188,9 +195,22 @@ export default function AlertTicker() {
   const redCount = alerts.filter(a => getSeverityMeta(a.severity).level === 'RED').length;
   const orangeCount = alerts.filter(a => getSeverityMeta(a.severity).level === 'SEVERE').length;
   const yellowCount = alerts.filter(a => getSeverityMeta(a.severity).level === 'MODERATE').length;
+  const liveCount = alerts.filter(a => getDataFreshness(a.issued_at).isLive).length;
+  const newCount = alerts.filter(a => {
+    const f = getDataFreshness(a.issued_at);
+    return f.isWithinWeek && !f.isLive;
+  }).length;
 
-  // Filter alerts by: Severity + Category + Search term
+  // Filter alerts by: Freshness (<= 7 days) + Severity + Category + Search term
   const filteredAlerts = alerts.filter(a => {
+    const fresh = getDataFreshness(a.issued_at);
+    // Strict 7-day retention guard: purge/filter anything older than 7 days
+    if (!fresh.isWithinWeek) return false;
+
+    // Freshness filter
+    if (freshnessFilter === 'LIVE' && !fresh.isLive) return false;
+    if (freshnessFilter === 'NEW' && !fresh.isNew) return false;
+
     const meta = getSeverityMeta(a.severity);
     if (filter !== 'ALL' && meta.level !== filter) return false;
 
@@ -378,9 +398,7 @@ export default function AlertTicker() {
                   {broadcastMeta?.label}
                 </span>
 
-                <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-                  ⏱️ {formatDistanceToNow(new Date(activeBroadcast.issued_at), { addSuffix: true })}
-                </span>
+                <FreshnessBadge timestamp={activeBroadcast.issued_at} size="sm" />
               </div>
 
               {/* Broadcast Controls: Prev, Next, Pause, Audio TTS */}
@@ -629,11 +647,12 @@ export default function AlertTicker() {
             </button>
           ))}
 
-          {(categoryFilter !== 'ALL' || stateSearch !== '' || filter !== 'ALL') && (
+          {(categoryFilter !== 'ALL' || stateSearch !== '' || filter !== 'ALL' || freshnessFilter !== 'ALL') && (
             <button
               onClick={() => {
                 setFilter('ALL');
                 setCategoryFilter('ALL');
+                setFreshnessFilter('ALL');
                 setStateSearch('');
               }}
               style={{
@@ -650,6 +669,50 @@ export default function AlertTicker() {
               Reset Filters
             </button>
           )}
+        </div>
+
+        {/* Freshness Filter Row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '10px' }}>
+          <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginRight: '4px' }}>
+            Data Freshness:
+          </span>
+          {[
+            { key: 'ALL', label: `All Fresh Bulletins (<= 7d) • ${alerts.length}`, activeBg: '#1e293b', border: 'rgba(255,255,255,0.2)' },
+            { key: 'LIVE', label: `🟢 Strictly Live (< 2h) • ${liveCount}`, activeBg: '#15803d', border: 'rgba(34, 197, 94, 0.4)' },
+            { key: 'NEW', label: `🔵 Active This Week (2h - 7d) • ${newCount}`, activeBg: '#0369a1', border: 'rgba(56, 189, 248, 0.4)' }
+          ].map(f => (
+            <button
+              key={f.key}
+              onClick={() => setFreshnessFilter(f.key as any)}
+              style={{
+                padding: '4px 12px',
+                borderRadius: '8px',
+                border: freshnessFilter === f.key ? '1px solid #38bdf8' : `1px solid ${f.border}`,
+                background: freshnessFilter === f.key ? f.activeBg : 'rgba(255, 255, 255, 0.04)',
+                color: '#ffffff',
+                fontSize: '0.74rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+          <span
+            title="Policy: Exasol strictly purges and filters any alert data older than 7 days."
+            style={{
+              marginLeft: 'auto',
+              padding: '3px 8px',
+              borderRadius: '6px',
+              background: 'rgba(56, 189, 248, 0.12)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              color: '#7dd3fc',
+              fontSize: '0.72rem',
+              fontWeight: 800
+            }}
+          >
+            🛡️ 7-Day Purge Guard Active
+          </span>
         </div>
       </div>
 
@@ -715,17 +778,20 @@ export default function AlertTicker() {
                         {alert.alert_type}
                       </span>
                     </div>
-                    <span style={{
-                      padding: '4px 10px',
-                      borderRadius: '8px',
-                      background: meta.badgeBg,
-                      color: meta.badgeColor,
-                      fontSize: '0.74rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.04em'
-                    }}>
-                      {meta.label}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <FreshnessBadge timestamp={alert.issued_at} size="sm" />
+                      <span style={{
+                        padding: '4px 10px',
+                        borderRadius: '8px',
+                        background: meta.badgeBg,
+                        color: meta.badgeColor,
+                        fontSize: '0.74rem',
+                        fontWeight: 800,
+                        letterSpacing: '0.04em'
+                      }}>
+                        {meta.label}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Title */}
@@ -931,6 +997,7 @@ export default function AlertTicker() {
                   <span style={{ color: '#38bdf8', fontSize: '0.75rem', fontWeight: 700 }}>
                     {selectedAlertModal.bulletin_number || 'IMD OFFICIAL WARNING'}
                   </span>
+                  <FreshnessBadge timestamp={selectedAlertModal.issued_at} size="sm" />
                 </div>
                 <h2 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0, color: '#f8fafc', lineHeight: 1.3 }}>
                   {getDisasterIcon(selectedAlertModal.alert_type)} {getTitle(selectedAlertModal)}

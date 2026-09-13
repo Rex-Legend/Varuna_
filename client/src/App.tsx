@@ -8,6 +8,7 @@ import CitizenReportForm from './components/CitizenReportForm';
 import AlertTicker from './components/AlertTicker';
 import SourceBreakdown from './components/SourceBreakdown';
 import ExtremeEvents from './components/ExtremeEvents';
+import { getDataFreshness, filterWithinWeek, FreshnessBadge } from './utils/freshness';
 
 type Tab = 'overview' | 'map' | 'analytics' | 'feed' | 'report' | 'alerts';
 
@@ -24,6 +25,9 @@ interface CityWeather {
   climate_zone?: string;
   latitude?: number;
   longitude?: number;
+  last_updated?: string;
+  freshness?: 'LIVE' | 'NEW';
+  is_within_week?: boolean;
 }
 
 const getTempBg = (temp: number) => {
@@ -46,7 +50,11 @@ function App() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    axios.get('/api/cities').then(res => setCities(res.data)).catch(() => {});
+    axios.get('/api/cities').then(res => {
+      // Strict 7-day retention guard: filter out any reading older than 7 days
+      const validCities = filterWithinWeek<CityWeather>(res.data, (c: any) => c.last_updated);
+      setCities(validCities);
+    }).catch(() => {});
     axios.get('/api/analytics/kpis').then(res => setKpis(res.data)).catch(() => {});
   }, []);
 
@@ -121,6 +129,11 @@ function App() {
             <div className="utility-metric-chip">
               <span className="pulse-green-dot"></span>
               <span>50/50 Ground Stations Active</span>
+            </div>
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
+            <div className="utility-metric-chip" style={{ color: '#86efac' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }}></span>
+              <span>7-Day Freshness Filter Active (Live & New)</span>
             </div>
             <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
             <div className="utility-metric-chip">
@@ -251,6 +264,7 @@ function App() {
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FreshnessBadge timestamp={c.last_updated} size="sm" />
                             <span
                               style={{
                                 background: getTempBg(c.temperature),
@@ -673,9 +687,10 @@ function App() {
                   <div style={{ fontSize: '0.82rem', color: '#94a3b8', marginTop: '4px' }}>
                     Climate Zone: <strong style={{ color: '#cbd5e1' }}>{selectedStation.climate_zone || 'Tropical'}</strong>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 600, marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 600, marginTop: '2px', marginBottom: '6px' }}>
                     Coordinates: {selectedStation.latitude?.toFixed(4) || '28.61'}, {selectedStation.longitude?.toFixed(4) || '77.20'}
                   </div>
+                  <FreshnessBadge timestamp={selectedStation.last_updated} size="sm" />
                 </div>
               </div>
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getDataFreshness, filterWithinWeek, FreshnessBadge } from '../utils/freshness';
 
 interface Report {
   id?: number;
@@ -10,6 +11,7 @@ interface Report {
   description: string;
   city_name?: string;
   timestamp?: string;
+  freshness?: 'LIVE' | 'NEW';
 }
 
 export default function CitizenReportForm() {
@@ -36,7 +38,9 @@ export default function CitizenReportForm() {
   const fetchReports = async () => {
     try {
       const response = await axios.get('/api/citizen-report');
-      setRecentReports(response.data);
+      // Strict 7-day retention guard: filter out any report older than 7 days
+      const validReports = filterWithinWeek<Report>(response.data, (r: any) => r.timestamp);
+      setRecentReports(validReports);
     } catch (err) {
       console.error('Failed to fetch reports', err);
     }
@@ -534,7 +538,7 @@ export default function CitizenReportForm() {
             boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
             flex: 1
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
                 📡 Live Citizen Reports ({recentReports.length})
               </h4>
@@ -553,9 +557,27 @@ export default function CitizenReportForm() {
               </button>
             </div>
 
+            {/* 7-Day Freshness Guard Policy Tag */}
+            <div style={{
+              background: 'rgba(56, 189, 248, 0.08)',
+              border: '1px solid rgba(56, 189, 248, 0.2)',
+              borderRadius: '8px',
+              padding: '6px 12px',
+              marginBottom: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '0.74rem',
+              color: '#7dd3fc',
+              fontWeight: 700
+            }}>
+              <span>🛡️ 7-Day Ground Truth Filter</span>
+              <span style={{ color: '#94a3b8', fontWeight: 500 }}>Older reports purged</span>
+            </div>
+
             {recentReports.length === 0 ? (
               <div style={{ padding: '30px', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
-                No citizen reports logged yet. Submit the first observation!
+                No active citizen reports logged within the last 7 days. Submit the first observation!
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '520px', overflowY: 'auto' }}>
@@ -598,9 +620,9 @@ export default function CitizenReportForm() {
                         {r.description}
                       </p>
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.72rem', color: '#94a3b8' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', fontSize: '0.72rem', color: '#94a3b8' }}>
                         <span>Condition: <strong style={{ color: '#7dd3fc' }}>{r.weather_condition || 'Normal'}</strong></span>
-                        <span>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}</span>
+                        <FreshnessBadge timestamp={r.timestamp} size="sm" />
                       </div>
                     </div>
                   );

@@ -129,9 +129,9 @@ export default function TemperatureChart() {
           {/* Time Horizon Selector */}
           <div style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '3px', borderRadius: '8px', display: 'flex', gap: '2px' }}>
             {[
-              { key: '24h', label: '24H Diurnal' },
-              { key: '7d', label: '7-Day' },
-              { key: '12m', label: '12-Month' }
+              { key: '24h', label: '🟢 24H (Live)' },
+              { key: '7d', label: '🔵 7-Day (New)' },
+              { key: '12m', label: '📊 12M Baseline' }
             ].map(h => (
               <button
                 key={h.key}

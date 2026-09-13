@@ -1,4 +1,4 @@
-﻿import { getAllData, bulkInsertExasol } from '../utils/db';
+import { getAllData, bulkInsertExasol } from '../utils/db';
 
 const TRACKED_HASHTAGS = [
     '#IMD', '#IMDWeather', '#IMDAlert', '#IMDUpdate', '#IndiaWeatherUpdate', '#IndiaWeather', '#CycloneAlert', '#CycloneWarning', '#FloodAlert', '#Heatwave', '#HeatwaveAlert', '#ColdWave', '#MonsoonUpdate', '#ThunderstormAlert', '#DustStorm', '#Rainfall', '#HeavyRain', '#CloudBurst', '#Snowfall', '#FogAlert', '#Drought', '#MumbaiRains', '#ChennaiRains', '#DelhiWeather', '#BangaloreRains', '#KolkataWeather', '#KeralaFloods', '#UttarakhandRains', '#NDMA', '#NDMAAlert', '#DisasterAlert', '#WeatherWarning', '#RedAlert', '#OrangeAlert'
@@ -100,6 +100,14 @@ function generateSimulatedPosts(cities: any[]) {
         const severity = classifySeverity(finalContent);
         const loc = detectLocation(finalContent, cities) || { city_id: null, city: null, state: null, lat: null, lon: null };
 
+        const nowMs = Date.now();
+        // Distribute timestamps: 50% within last 2 hours (LIVE), 50% between 2 hours and 5 days ago (NEW, <= 7d)
+        const isLiveSample = Math.random() > 0.5;
+        const ageMs = isLiveSample 
+            ? Math.floor(Math.random() * (110 * 60 * 1000)) // within 110 minutes (LIVE)
+            : Math.floor(2 * 3600 * 1000 + Math.random() * (5 * 24 * 3600 * 1000)); // 2h to 5 days (NEW)
+        const postedDate = new Date(nowMs - ageMs);
+
         posts.push({
             source_id: 2,
             platform: 'Twitter/X',
@@ -108,7 +116,9 @@ function generateSimulatedPosts(cities: any[]) {
             author_handle: `@weather_${cityObj.city.toLowerCase().replace(/[^a-z]/g, '')}`,
             author_display_name: `${cityObj.city} Weather Bureau`,
             author_verified: Math.random() > 0.7,
-            posted_at: new Date().toISOString(),
+            posted_at: postedDate.toISOString(),
+            freshness: isLiveSample ? 'LIVE' : 'NEW',
+            is_within_week: true,
             matched_hashtags: matched.join(','),
             all_hashtags: allHashtags.join(','),
             detected_city_id: loc.city_id,
@@ -140,10 +150,25 @@ function generateSimulatedPosts(cities: any[]) {
 export async function collectSocialMedia() {
     console.log('[Social] Collecting #IMD posts with full metadata...');
     const cities = getAllData('DIM_CITIES');
-    const posts = generateSimulatedPosts(cities);
+    const newPosts = generateSimulatedPosts(cities);
     
-    await bulkInsertExasol('FACT_SOCIAL_MEDIA_POSTS', posts);
-    const severeCount = posts.filter(p => p.severity_level === 'severe' || p.severity_level === 'extreme').length;
-    const mediaCount = posts.filter(p => p.has_photo || p.has_video).length;
-    console.log(`[Social] Ingested ${posts.length} posts (Severe: ${severeCount}, Media: ${mediaCount})`);
+    // Strict 7-day retention guard: purge any existing posts older than 7 days
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const nowMs = Date.now();
+    const existing = getAllData('FACT_SOCIAL_MEDIA_POSTS') || [];
+    const validExisting = existing.filter(p => {
+        const postTime = new Date(p.posted_at).getTime();
+        return (nowMs - postTime) <= SEVEN_DAYS_MS;
+    });
+
+    const combined = [...validExisting, ...newPosts];
+    // Keep max recent 150 posts
+    const trimmed = combined.slice(-150);
+    
+    const { setTableData } = await import('../utils/db');
+    setTableData('FACT_SOCIAL_MEDIA_POSTS', trimmed);
+    
+    const severeCount = newPosts.filter(p => p.severity_level === 'severe' || p.severity_level === 'extreme').length;
+    const mediaCount = newPosts.filter(p => p.has_photo || p.has_video).length;
+    console.log(`[Social] Ingested ${newPosts.length} posts (Severe: ${severeCount}, Media: ${mediaCount}). Total within 7 days: ${trimmed.length}`);
 }

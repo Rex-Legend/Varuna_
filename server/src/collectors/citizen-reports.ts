@@ -58,24 +58,56 @@ router.post('/', async (req, res) => {
 router.get('/', (req, res) => {
     const reports = getAllData('FACT_CITIZEN_REPORTS');
     const cities = getAllData('DIM_CITIES');
-    const enriched = reports.slice(-50).map(r => {
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+    const nowMs = Date.now();
+
+    // Strict 7-day filter: discard any report older than 7 days
+    const validReports = reports.filter(r => {
+        const reportTime = new Date(r.timestamp).getTime();
+        return !isNaN(reportTime) && (nowMs - reportTime) <= SEVEN_DAYS_MS;
+    });
+
+    const enriched = validReports.slice(-50).map(r => {
         const city = cities.find((c: any) => c.id === r.city_id);
-        return { ...r, city_name: city ? city.city : 'Unknown' };
+        const reportTime = new Date(r.timestamp).getTime();
+        const ageMs = nowMs - reportTime;
+        const freshness = ageMs <= TWO_HOURS_MS ? 'LIVE' : 'NEW';
+        return { 
+            ...r, 
+            city_name: city ? city.city : 'Unknown',
+            freshness,
+            is_within_week: true
+        };
     });
     res.json(enriched);
 });
 
 router.get('/stats', (req, res) => {
     const reports = getAllData('FACT_CITIZEN_REPORTS');
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const nowMs = Date.now();
+
+    // Only aggregate over reports within the 7-day freshness window
+    const validReports = reports.filter(r => {
+        const reportTime = new Date(r.timestamp).getTime();
+        return !isNaN(reportTime) && (nowMs - reportTime) <= SEVEN_DAYS_MS;
+    });
+
     const byCondition: any = {};
     const bySeverity: any = {};
 
-    reports.forEach(r => {
+    validReports.forEach(r => {
         byCondition[r.weather_condition] = (byCondition[r.weather_condition] || 0) + 1;
         bySeverity[r.severity_rating] = (bySeverity[r.severity_rating] || 0) + 1;
     });
 
-    res.json({ counts_by_condition: byCondition, counts_by_severity: bySeverity });
+    res.json({ 
+        counts_by_condition: byCondition, 
+        counts_by_severity: bySeverity,
+        total_valid_reports: validReports.length,
+        retention_window_days: 7
+    });
 });
 
 export default router;

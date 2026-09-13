@@ -1,4 +1,4 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import { getAllData } from '../utils/db';
 
 const router = Router();
@@ -24,7 +24,9 @@ router.get('/', (req, res) => {
                     summary: p.post_text,
                     severity: p.severity_level || 'normal',
                     hasMedia: !!(p.has_photo || p.has_video),
-                    timestamp: new Date(Date.now() - i * 45000).toISOString()
+                    timestamp: new Date(Date.now() - i * 45000).toISOString(),
+                    freshness: 'LIVE',
+                    is_within_week: true
                 };
                 res.write(`data: ${JSON.stringify(initPayload)}\n\n`);
             }
@@ -49,7 +51,9 @@ router.get('/', (req, res) => {
                 summary: a.alert_description || a.alert_title || a.title || a.description, 
                 severity: a.severity || 'warning', 
                 hasMedia: false,
-                timestamp: new Date().toISOString() 
+                timestamp: new Date().toISOString(),
+                freshness: 'LIVE',
+                is_within_week: true
             };
         } else if (posts.length > 0) {
             const p = posts[Math.floor(Math.random() * posts.length)];
@@ -60,7 +64,9 @@ router.get('/', (req, res) => {
                 summary: p.post_text, 
                 severity: p.severity_level || 'normal', 
                 hasMedia: !!(p.has_photo || p.has_video),
-                timestamp: new Date().toISOString() 
+                timestamp: new Date().toISOString(),
+                freshness: 'LIVE',
+                is_within_week: true
             };
         } else {
             eventPayload = { 
@@ -70,7 +76,9 @@ router.get('/', (req, res) => {
                 summary: 'Real-time telemetry: 31.9°C, Humidity 63%, Wind 9.9 km/h', 
                 severity: 'normal', 
                 hasMedia: false,
-                timestamp: new Date().toISOString() 
+                timestamp: new Date().toISOString(),
+                freshness: 'LIVE',
+                is_within_week: true
             };
         }
 

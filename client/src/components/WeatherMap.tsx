@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, LayersControl } from 'react-leaflet';
 import axios from 'axios';
+import { getDataFreshness, filterWithinWeek, FreshnessBadge } from '../utils/freshness';
 
 interface City {
   city_id: number;
@@ -12,6 +13,9 @@ interface City {
   rainfall: number;
   weather_condition: string;
   climate_zone?: string;
+  last_updated?: string;
+  freshness?: 'LIVE' | 'NEW';
+  is_within_week?: boolean;
 }
 
 const getTempColor = (temp: number) => {
@@ -33,7 +37,9 @@ export default function WeatherMap() {
     const fetchCities = async () => {
       try {
         const response = await axios.get('/api/cities');
-        setCities(response.data);
+        // Strict 7-day retention guard: only keep stations within the last 7 days
+        const validCities = filterWithinWeek<City>(response.data, (c: any) => c.last_updated);
+        setCities(validCities);
       } catch (error) {
         console.error('Error fetching cities for map', error);
       }
@@ -186,6 +192,11 @@ export default function WeatherMap() {
                     <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.4 }}>
                       <div><strong>Climate:</strong> {city.climate_zone || 'Tropical'}</div>
                       <div><strong>Condition:</strong> {city.weather_condition}</div>
+                    </div>
+
+                    <div style={{ marginTop: '10px', paddingTop: '6px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <FreshnessBadge timestamp={city.last_updated} size="sm" />
+                      <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>Exasol Mesh</span>
                     </div>
                   </div>
                 </Popup>

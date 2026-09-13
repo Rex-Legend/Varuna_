@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
+import { getDataFreshness, filterWithinWeek, FreshnessBadge } from '../utils/freshness';
 
 interface FeedEvent {
   id: string;
@@ -14,6 +15,7 @@ interface FeedEvent {
   handle?: string;
   likes?: number;
   retweets?: number;
+  freshness?: 'LIVE' | 'NEW';
 }
 
 export default function LiveFeed() {
@@ -23,6 +25,7 @@ export default function LiveFeed() {
   const bufferedEvents = useRef<FeedEvent[]>([]);
   const [connected, setConnected] = useState(false);
   const [sourceFilter, setSourceFilter] = useState<string>('ALL');
+  const [freshnessFilter, setFreshnessFilter] = useState<'ALL' | 'LIVE' | 'NEW'>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedHashtag, setSelectedHashtag] = useState<string>('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -40,8 +43,14 @@ export default function LiveFeed() {
       eventSource.onmessage = (e) => {
         try {
           const raw = JSON.parse(e.data);
+          const freshness = getDataFreshness(raw.timestamp);
+          
+          // Strict 7-Day Filter: Filter out any event older than 7 days
+          if (!freshness.isWithinWeek) return;
+
           const newEvent: FeedEvent = {
             ...raw,
+            freshness: freshness.isLive ? 'LIVE' : 'NEW',
             author: raw.source === 'Social Media' ? 'IMD Weather Intelligence' : raw.source === 'Disaster Alert' ? 'NDMA Disaster Cell' : 'Automated Telemetry Bot',
             handle: raw.source === 'Social Media' ? '@Indiametdept' : raw.source === 'Disaster Alert' ? '@NDMAIndia' : '@exasol_mesh',
             likes: Math.floor(25 + Math.random() * 120),
@@ -54,7 +63,9 @@ export default function LiveFeed() {
           } else {
             setEvents(prev => {
               if (prev.some(ev => ev.id === newEvent.id)) return prev;
-              return [newEvent, ...prev].slice(0, 60);
+              // Ensure we only store valid within-week events
+              const updated = [newEvent, ...prev].filter(item => getDataFreshness(item.timestamp).isWithinWeek);
+              return updated.slice(0, 60);
             });
           }
         } catch (err) {}
@@ -132,6 +143,14 @@ export default function LiveFeed() {
 
   // Filter items
   const filteredEvents = events.filter(ev => {
+    const fresh = getDataFreshness(ev.timestamp);
+    // Strict 7-day retention guard: filter out any data older than 7 days
+    if (!fresh.isWithinWeek) return false;
+
+    // Freshness filter: Live (< 2h) vs New (2h - 7d)
+    if (freshnessFilter === 'LIVE' && !fresh.isLive) return false;
+    if (freshnessFilter === 'NEW' && !fresh.isNew) return false;
+
     if (sourceFilter !== 'ALL') {
       const s = (ev.source || '').toLowerCase();
       if (sourceFilter === 'SOCIAL' && !s.includes('social')) return false;
@@ -149,6 +168,12 @@ export default function LiveFeed() {
     }
     return true;
   });
+
+  const liveEventsCount = events.filter(ev => getDataFreshness(ev.timestamp).isLive).length;
+  const newEventsCount = events.filter(ev => {
+    const f = getDataFreshness(ev.timestamp);
+    return f.isWithinWeek && !f.isLive;
+  }).length;
 
   const popularHashtags = ['#IMD', '#MumbaiRains', '#CycloneDana', '#DelhiHeatwave', '#AssamFloods', '#WeatherAlert'];
 
@@ -284,32 +309,78 @@ export default function LiveFeed() {
         </div>
       </div>
 
-      {/* Source Filter Tabs */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', flexWrap: 'wrap' }}>
-        {[
-          { key: 'ALL', label: `All Ingested Events (${events.length})` },
-          { key: 'SOCIAL', label: '🐦 #IMD Twitter / X Telemetry' },
-          { key: 'ALERT', label: '🚨 Disaster Advisories' },
-          { key: 'API', label: '🌐 Automated Doppler API' }
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setSourceFilter(tab.key)}
+      {/* Filter Tabs & Freshness Control Strip */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
+        {/* Source Filter Tabs */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {[
+            { key: 'ALL', label: `All Sources (${events.length})` },
+            { key: 'SOCIAL', label: '🐦 #IMD Twitter / X' },
+            { key: 'ALERT', label: '🚨 Disaster Advisories' },
+            { key: 'API', label: '🌐 Automated Radar API' }
+          ].map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setSourceFilter(tab.key)}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '20px',
+                border: sourceFilter === tab.key ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+                background: sourceFilter === tab.key ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
+                color: sourceFilter === tab.key ? '#ffffff' : '#94a3b8',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Freshness Filter Pills & 7-Day Guard */}
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: 700, marginRight: '4px' }}>
+            FRESHNESS:
+          </span>
+          {[
+            { key: 'ALL', label: `All (<=7d) • ${events.length}`, bg: 'rgba(255,255,255,0.06)', activeBg: '#1e293b', border: 'rgba(255,255,255,0.2)' },
+            { key: 'LIVE', label: `🟢 Live (<2h) • ${liveEventsCount}`, bg: 'rgba(34, 197, 94, 0.1)', activeBg: '#15803d', border: 'rgba(34, 197, 94, 0.4)' },
+            { key: 'NEW', label: `🔵 New (2h-7d) • ${newEventsCount}`, bg: 'rgba(56, 189, 248, 0.1)', activeBg: '#0369a1', border: 'rgba(56, 189, 248, 0.4)' }
+          ].map(f => (
+            <button
+              key={f.key}
+              onClick={() => setFreshnessFilter(f.key as any)}
+              style={{
+                padding: '4px 12px',
+                borderRadius: '8px',
+                border: freshnessFilter === f.key ? '1px solid #38bdf8' : `1px solid ${f.border}`,
+                background: freshnessFilter === f.key ? f.activeBg : f.bg,
+                color: '#ffffff',
+                fontSize: '0.74rem',
+                fontWeight: 800,
+                cursor: 'pointer'
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+          <span 
+            title="Policy: All records older than 7 days are automatically purged and filtered from telemetry streams."
             style={{
-              padding: '6px 14px',
-              borderRadius: '20px',
-              border: sourceFilter === tab.key ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
-              background: sourceFilter === tab.key ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
-              color: sourceFilter === tab.key ? '#ffffff' : '#94a3b8',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
+              padding: '4px 10px',
+              borderRadius: '8px',
+              background: 'rgba(56, 189, 248, 0.12)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              color: '#7dd3fc',
+              fontSize: '0.72rem',
+              fontWeight: 800
             }}
           >
-            {tab.label}
-          </button>
-        ))}
+            🛡️ 7-Day Purge Guard Active
+          </span>
+        </div>
       </div>
 
       {/* Feed Cards Container */}
@@ -369,6 +440,7 @@ export default function LiveFeed() {
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FreshnessBadge timestamp={ev.timestamp} size="sm" />
                     <span style={{
                       padding: '3px 8px',
                       borderRadius: '6px',
@@ -379,9 +451,6 @@ export default function LiveFeed() {
                       fontWeight: 800
                     }}>
                       {sev.label}
-                    </span>
-                    <span style={{ color: '#94a3b8', fontSize: '0.76rem', fontWeight: 600 }}>
-                      ⏱️ {formatEventTime(ev.timestamp)}
                     </span>
                   </div>
                 </div>
