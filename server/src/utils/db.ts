@@ -24,6 +24,10 @@ export function getAllData(table: string): any[] {
     return memoryDb.get(table) || [];
 }
 
+export function setTableData(table: string, rows: any[]): void {
+    memoryDb.set(table, rows);
+}
+
 const indianCities = [
     { city: 'Mumbai', state: 'Maharashtra', lat: 19.0760, lon: 72.8777, climate_zone: 'Tropical Wet' },
     { city: 'Delhi', state: 'Delhi', lat: 28.7041, lon: 77.1025, climate_zone: 'Semi-Arid' },
