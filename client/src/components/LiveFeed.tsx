@@ -176,7 +176,7 @@ export default function LiveFeed() {
     return f.isWithinTwoDays && !f.isLive;
   }).length;
 
-  const popularHashtags = ['#IMD', '#MumbaiRains', '#CycloneDana', '#DelhiHeatwave', '#AssamFloods', '#WeatherAlert'];
+  const popularHashtags = ['#IMD', '#MumbaiRains', '#CycloneFengal', '#DelhiHeatwave', '#AssamFloods', '#WeatherAlert'];
 
   return (
     <div style={{ width: '100%' }}>

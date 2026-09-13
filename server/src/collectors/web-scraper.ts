@@ -38,7 +38,7 @@ export function generateLiveAlerts(): DisasterAlert[] {
             alert_id: 101,
             source_id: 6,
             alert_type: 'Cyclone',
-            title: 'Severe Cyclonic Storm "Dana" - Coastal Landfall Warning',
+            title: 'Severe Cyclonic Storm "Fengal" - Coastal Landfall Warning',
             severity: 'Extreme',
             affected_states: 'Odisha, West Bengal, Andhra Pradesh',
             affected_districts: ['Puri', 'Kendrapara', 'Bhadrak', 'Balasore', 'East Midnapore'],

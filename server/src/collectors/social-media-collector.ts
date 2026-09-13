@@ -24,7 +24,7 @@ const SEVERITY_RULES = [
     { pattern: /warning|advisory|alert|disruption|delay|cancel/i, level: 'warning' }
 ];
 
-const CYCLONE_NAMES = ['DANA', 'FENGAL', 'REMAL', 'ASNA', 'MICHAUNG', 'BIPARJOY'];
+const CYCLONE_NAMES = ['FENGAL', 'REMAL', 'ASNA', 'MICHAUNG', 'BIPARJOY'];
 
 function extractHashtags(text: string): string[] {
     const matches = text.match(/#[\w]+/g);
@@ -347,6 +347,9 @@ export async function collectSocialMedia() {
         const postTime = new Date(p.posted_at).getTime();
         if ((nowMs - postTime) > TWO_DAYS_MS) return false;
         
+        // Remove any posts referencing Cyclone Dana
+        if (/\bdana\b/i.test(p.post_text || '')) return false;
+
         // Strict Fact-Check gatekeeper filter: eliminates old bogus posts like "snowfall near Raipur"
         const check = validateMeteorologicalFactCheck(p.post_text || '', p.detected_city, p.detected_state);
         return check.isValid;
