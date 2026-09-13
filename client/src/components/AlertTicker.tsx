@@ -31,13 +31,13 @@ export default function AlertTicker() {
 
   const getSeverityMeta = (sev: string) => {
     const s = (sev || '').toLowerCase();
-    if (s === 'extreme' || s === 'high') {
+    if (s === 'extreme' || s === 'critical' || s === 'high') {
       return {
-        level: 'EXTREME',
+        level: 'RED',
         label: 'RED ALERT',
-        borderColor: '#dc2626',
-        badgeBg: '#fee2e2',
-        badgeColor: '#991b1b',
+        borderColor: '#ef4444',
+        badgeBg: 'rgba(239, 68, 68, 0.2)',
+        badgeColor: '#fca5a5',
         icon: '🚨'
       };
     }
@@ -45,9 +45,9 @@ export default function AlertTicker() {
       return {
         level: 'SEVERE',
         label: 'ORANGE WARNING',
-        borderColor: '#ea580c',
-        badgeBg: '#ffedd5',
-        badgeColor: '#9a3412',
+        borderColor: '#f97316',
+        badgeBg: 'rgba(249, 115, 22, 0.2)',
+        badgeColor: '#fdba74',
         icon: '⚠️'
       };
     }
@@ -55,8 +55,8 @@ export default function AlertTicker() {
       level: 'MODERATE',
       label: 'YELLOW ADVISORY',
       borderColor: '#eab308',
-      badgeBg: '#fef9c3',
-      badgeColor: '#854d0e',
+      badgeBg: 'rgba(234, 179, 8, 0.2)',
+      badgeColor: '#fde047',
       icon: 'ℹ️'
     };
   };
@@ -194,9 +194,9 @@ export default function AlertTicker() {
             style={{
               padding: '8px 18px',
               borderRadius: '20px',
-              border: filter === chip.key ? '2px solid #0284c7' : '1px solid #cbd5e1',
-              background: filter === chip.key ? '#0284c7' : '#ffffff',
-              color: filter === chip.key ? '#ffffff' : '#334155',
+              border: filter === chip.key ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+              background: filter === chip.key ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
+              color: filter === chip.key ? '#ffffff' : '#94a3b8',
               fontSize: '0.84rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -217,12 +217,12 @@ export default function AlertTicker() {
             <div
               key={alert.alert_id || idx}
               style={{
-                background: '#ffffff',
+                background: 'rgba(15, 30, 54, 0.85)',
                 borderRadius: '16px',
-                border: '1px solid #e2e8f0',
-                borderTop: `6px solid ${meta.borderColor}`,
+                border: '1px solid rgba(56, 189, 248, 0.16)',
+                borderTop: `4px solid ${meta.borderColor}`,
                 padding: '22px',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -234,7 +234,7 @@ export default function AlertTicker() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '1.6rem' }}>{icon}</span>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#7dd3fc', textTransform: 'uppercase' }}>
                       {alert.alert_type}
                     </span>
                   </div>
@@ -252,25 +252,25 @@ export default function AlertTicker() {
                 </div>
 
                 {/* Title */}
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginBottom: '10px', lineHeight: 1.3 }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginBottom: '10px', lineHeight: 1.3 }}>
                   {getTitle(alert)}
                 </h3>
 
                 {/* Description */}
-                <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: 1.5, marginBottom: '16px' }}>
+                <p style={{ fontSize: '0.88rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '16px' }}>
                   {alert.description}
                 </p>
 
                 {/* Affected Regions */}
                 <div style={{
-                  background: '#f8fafc',
-                  border: '1px solid #f1f5f9',
+                  background: 'rgba(10, 22, 40, 0.7)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
                   borderRadius: '10px',
                   padding: '10px 14px',
                   marginBottom: '16px',
                   fontSize: '0.82rem'
                 }}>
-                  <div style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>
+                  <div style={{ color: '#94a3b8', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>
                     Targeted States & Territories:
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -278,13 +278,13 @@ export default function AlertTicker() {
                       <span
                         key={sIdx}
                         style={{
-                          background: '#ffffff',
-                          border: '1px solid #cbd5e1',
+                          background: 'rgba(56, 189, 248, 0.1)',
+                          border: '1px solid rgba(56, 189, 248, 0.25)',
                           padding: '2px 8px',
                           borderRadius: '6px',
                           fontSize: '0.78rem',
                           fontWeight: 700,
-                          color: '#1e293b'
+                          color: '#bae6fd'
                         }}
                       >
                         📍 {st.trim()}
@@ -296,23 +296,24 @@ export default function AlertTicker() {
 
               {/* Card Footer: Timestamps & Authority */}
               <div style={{
-                borderTop: '1px solid #f1f5f9',
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                 paddingTop: '14px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 fontSize: '0.75rem',
-                color: '#64748b'
+                color: '#94a3b8'
               }}>
                 <span>
-                  Issued: <strong>{formatDistanceToNow(new Date(alert.issued_at), { addSuffix: true })}</strong>
+                  Issued: <strong style={{ color: '#f8fafc' }}>{formatDistanceToNow(new Date(alert.issued_at), { addSuffix: true })}</strong>
                 </span>
                 <span style={{
-                  background: '#f1f5f9',
+                  background: 'rgba(2, 132, 199, 0.15)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
                   padding: '3px 8px',
                   borderRadius: '6px',
                   fontWeight: 600,
-                  color: '#475569'
+                  color: '#38bdf8'
                 }}>
                   IMD / NDMA Verified
                 </span>

@@ -92,7 +92,9 @@ export default function WeatherMap() {
             style={{
               padding: '6px 14px',
               borderRadius: '20px',
-              border: '1px solid #cbd5e1',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'rgba(255, 255, 255, 0.06)',
+              color: '#f8fafc',
               fontSize: '0.82rem',
               outline: 'none',
               width: '180px'
@@ -105,10 +107,11 @@ export default function WeatherMap() {
             style={{
               padding: '6px 12px',
               borderRadius: '20px',
-              border: '1px solid #cbd5e1',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               fontSize: '0.82rem',
               outline: 'none',
-              background: '#fff'
+              background: '#0b1d36',
+              color: '#f8fafc'
             }}
           >
             <option value="all">All 50 Stations</option>

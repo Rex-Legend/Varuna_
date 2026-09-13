@@ -46,9 +46,9 @@ export default function ExtremeEvents() {
   };
 
   const getSeverityBadge = (score: number) => {
-    if (score >= 90) return { bg: '#fee2e2', color: '#991b1b', label: 'CRITICAL (RED)' };
-    if (score >= 80) return { bg: '#ffedd5', color: '#9a3412', label: 'SEVERE (ORANGE)' };
-    return { bg: '#fef9c3', color: '#854d0e', label: 'ELEVATED (YELLOW)' };
+    if (score >= 90) return { bg: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.4)', label: 'CRITICAL (RED)' };
+    if (score >= 80) return { bg: 'rgba(249, 115, 22, 0.2)', color: '#fdba74', border: '1px solid rgba(249, 115, 22, 0.4)', label: 'SEVERE (ORANGE)' };
+    return { bg: 'rgba(234, 179, 8, 0.2)', color: '#fde047', border: '1px solid rgba(234, 179, 8, 0.4)', label: 'ELEVATED (YELLOW)' };
   };
 
   // Filter
@@ -82,10 +82,10 @@ export default function ExtremeEvents() {
       {/* Header with Search & Filter Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '18px' }}>
         <div>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
             ⚡ Top National Meteorological Extreme Events
           </h3>
-          <p style={{ color: '#64748b', fontSize: '0.84rem', marginTop: '4px' }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.84rem', marginTop: '4px' }}>
             Real-time multi-dimensional severity scoring computed via Exasol analytical queries
           </p>
         </div>
@@ -100,7 +100,9 @@ export default function ExtremeEvents() {
             style={{
               padding: '6px 14px',
               borderRadius: '20px',
-              border: '1px solid #cbd5e1',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              background: 'rgba(255, 255, 255, 0.06)',
+              color: '#f8fafc',
               fontSize: '0.82rem',
               outline: 'none',
               width: '210px'
@@ -114,11 +116,11 @@ export default function ExtremeEvents() {
             style={{
               padding: '6px 12px',
               borderRadius: '10px',
-              border: '1px solid #cbd5e1',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               fontSize: '0.82rem',
               fontWeight: 600,
-              background: '#f8fafc',
-              color: '#334155'
+              background: '#0b1d36',
+              color: '#f8fafc'
             }}
           >
             <option value="severity">Sort: Severity Score</option>
@@ -143,9 +145,9 @@ export default function ExtremeEvents() {
             style={{
               padding: '6px 14px',
               borderRadius: '20px',
-              border: filterType === cat.key ? '2px solid #0284c7' : '1px solid #e2e8f0',
-              background: filterType === cat.key ? '#0284c7' : '#ffffff',
-              color: filterType === cat.key ? '#ffffff' : '#475569',
+              border: filterType === cat.key ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+              background: filterType === cat.key ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
+              color: filterType === cat.key ? '#ffffff' : '#94a3b8',
               fontSize: '0.8rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -159,7 +161,7 @@ export default function ExtremeEvents() {
 
       {/* Interactive Expandable Event List */}
       {sorted.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>No extreme events matched your filter.</div>
+        <div style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>No extreme events matched your filter.</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {sorted.map(ev => {
@@ -171,10 +173,10 @@ export default function ExtremeEvents() {
               <div
                 key={ev.rank}
                 style={{
-                  background: '#ffffff',
-                  border: isExpanded ? '2px solid #0284c7' : '1px solid #e2e8f0',
+                  background: 'rgba(15, 30, 54, 0.85)',
+                  border: isExpanded ? '1px solid #38bdf8' : '1px solid rgba(56, 189, 248, 0.16)',
                   borderRadius: '14px',
-                  boxShadow: isExpanded ? '0 6px 20px rgba(2, 132, 199, 0.12)' : '0 1px 4px rgba(0,0,0,0.03)',
+                  boxShadow: isExpanded ? '0 8px 24px rgba(2, 132, 199, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.2)',
                   transition: 'all 0.2s ease',
                   overflow: 'hidden'
                 }}
@@ -188,7 +190,7 @@ export default function ExtremeEvents() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     cursor: 'pointer',
-                    background: isExpanded ? '#f8fafc' : '#ffffff',
+                    background: isExpanded ? 'rgba(56, 189, 248, 0.08)' : 'transparent',
                     gap: '12px',
                     flexWrap: 'wrap'
                   }}
@@ -199,8 +201,9 @@ export default function ExtremeEvents() {
                       width: '28px',
                       height: '28px',
                       borderRadius: '50%',
-                      background: '#0f172a',
-                      color: '#ffffff',
+                      background: 'rgba(56, 189, 248, 0.2)',
+                      color: '#38bdf8',
+                      border: '1px solid rgba(56, 189, 248, 0.4)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -214,10 +217,10 @@ export default function ExtremeEvents() {
 
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <strong style={{ fontSize: '1rem', color: '#0f172a' }}>{ev.city}</strong>
-                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>{ev.state || 'India'}</span>
+                        <strong style={{ fontSize: '1rem', color: '#f8fafc' }}>{ev.city}</strong>
+                        <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{ev.state || 'India'}</span>
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 700 }}>
+                      <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontWeight: 700 }}>
                         {ev.category_label || 'Extreme Meteorological Event'}
                       </div>
                     </div>
@@ -226,13 +229,13 @@ export default function ExtremeEvents() {
                   {/* Right: Key Metric Chips + Severity Badge + Chevron */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ display: 'flex', gap: '10px', fontSize: '0.82rem', fontWeight: 700 }}>
-                      <span style={{ color: ev.max_temp > 40 ? '#ef4444' : '#475569' }}>
+                      <span style={{ color: ev.max_temp > 40 ? '#f87171' : '#cbd5e1' }}>
                         🌡️ {ev.max_temp}°C
                       </span>
-                      <span style={{ color: ev.rainfall > 50 ? '#0284c7' : '#64748b' }}>
+                      <span style={{ color: ev.rainfall > 50 ? '#38bdf8' : '#cbd5e1' }}>
                         🌧️ {ev.rainfall} mm
                       </span>
-                      <span style={{ color: ev.wind > 60 ? '#8b5cf6' : '#64748b' }}>
+                      <span style={{ color: ev.wind > 60 ? '#c084fc' : '#cbd5e1' }}>
                         💨 {ev.wind} km/h
                       </span>
                     </div>
@@ -242,6 +245,7 @@ export default function ExtremeEvents() {
                       borderRadius: '8px',
                       background: badge.bg,
                       color: badge.color,
+                      border: badge.border,
                       fontSize: '0.75rem',
                       fontWeight: 800,
                       letterSpacing: '0.03em'
@@ -251,7 +255,7 @@ export default function ExtremeEvents() {
 
                     <span style={{
                       fontSize: '1rem',
-                      color: '#64748b',
+                      color: '#94a3b8',
                       transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                       transition: 'transform 0.2s'
                     }}>
@@ -264,33 +268,33 @@ export default function ExtremeEvents() {
                 {isExpanded && (
                   <div style={{
                     padding: '18px 22px',
-                    borderTop: '1px solid #e2e8f0',
-                    background: '#ffffff'
+                    borderTop: '1px solid rgba(56, 189, 248, 0.15)',
+                    background: 'rgba(10, 22, 40, 0.95)'
                   }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', marginBottom: '14px' }}>
                       <div>
-                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '4px' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#7dd3fc', textTransform: 'uppercase', marginBottom: '4px' }}>
                           Synoptic Meteorological Mechanism
                         </div>
-                        <p style={{ fontSize: '0.86rem', color: '#334155', lineHeight: 1.5, margin: 0 }}>
+                        <p style={{ fontSize: '0.86rem', color: '#cbd5e1', lineHeight: 1.5, margin: 0 }}>
                           {ev.meteorological_cause || 'Intense convective system combined with severe thermal convergence.'}
                         </p>
                       </div>
 
                       <div>
-                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '4px' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#7dd3fc', textTransform: 'uppercase', marginBottom: '4px' }}>
                           Ground Impact & Infrastructure Status
                         </div>
-                        <p style={{ fontSize: '0.86rem', color: '#334155', lineHeight: 1.5, margin: 0 }}>
+                        <p style={{ fontSize: '0.86rem', color: '#cbd5e1', lineHeight: 1.5, margin: 0 }}>
                           {ev.impact_summary || 'Municipal alert activated; power lines and ground stations on high readiness.'}
                         </p>
                       </div>
                     </div>
 
                     <div style={{
-                      background: '#f8fafc',
+                      background: 'rgba(15, 30, 54, 0.9)',
                       borderRadius: '10px',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
                       padding: '12px 16px',
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -299,18 +303,19 @@ export default function ExtremeEvents() {
                       gap: '12px'
                     }}>
                       <div>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#dc2626', textTransform: 'uppercase' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#f87171', textTransform: 'uppercase' }}>
                           🚨 Official Citizen Safety Advisory:
                         </span>
-                        <div style={{ fontSize: '0.82rem', color: '#1e293b', fontWeight: 600, marginTop: '2px' }}>
+                        <div style={{ fontSize: '0.82rem', color: '#f8fafc', fontWeight: 600, marginTop: '2px' }}>
                           {ev.official_advisory || 'Follow IMD state bulletins and stay sheltered during peak alert periods.'}
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{
-                          background: '#e0f2fe',
-                          color: '#0369a1',
+                          background: 'rgba(2, 132, 199, 0.25)',
+                          color: '#7dd3fc',
+                          border: '1px solid rgba(56, 189, 248, 0.3)',
                           padding: '4px 10px',
                           borderRadius: '8px',
                           fontSize: '0.72rem',

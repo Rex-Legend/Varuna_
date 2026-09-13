@@ -35,16 +35,16 @@ export default function SourceBreakdown() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
           📊 In-Memory Telemetry Breakdown
         </h3>
-        <p style={{ color: '#64748b', fontSize: '0.82rem', marginTop: '2px' }}>
+        <p style={{ color: '#94a3b8', fontSize: '0.82rem', marginTop: '2px' }}>
           Exasol multi-source distribution across Big Data ingest pipelines
         </p>
       </div>
 
       {data.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading source distribution...</div>
+        <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>Loading source distribution...</div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', alignItems: 'center', flex: 1 }}>
           {/* Donut Chart with Center Total */}
@@ -67,11 +67,11 @@ export default function SourceBreakdown() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
+                    backgroundColor: '#09182d',
                     borderRadius: '8px',
-                    border: 'none',
-                    color: '#fff',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(56, 189, 248, 0.3)',
+                    color: '#ffffff',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
                     fontSize: '0.85rem'
                   }}
                   formatter={(value: any) => [`${Number(value).toLocaleString()} records`, 'Count']}
@@ -87,10 +87,10 @@ export default function SourceBreakdown() {
               textAlign: 'center',
               pointerEvents: 'none'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f8fafc', lineHeight: 1 }}>
                 {total.toLocaleString()}
               </div>
-              <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px' }}>
                 Total Rows
               </div>
             </div>
@@ -107,9 +107,9 @@ export default function SourceBreakdown() {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '8px 12px',
-                  background: '#f8fafc',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   borderRadius: '10px',
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
                   fontSize: '0.82rem'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -119,13 +119,13 @@ export default function SourceBreakdown() {
                       borderRadius: '50%',
                       background: cfg.color
                     }}></span>
-                    <span style={{ fontWeight: 700, color: '#1e293b' }}>
+                    <span style={{ fontWeight: 700, color: '#f8fafc' }}>
                       {cfg.icon} {item.name}
                     </span>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{item.value.toLocaleString()}</span>
-                    <span style={{ marginLeft: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 600 }}>({pct}%)</span>
+                    <span style={{ fontWeight: 800, color: '#38bdf8' }}>{item.value.toLocaleString()}</span>
+                    <span style={{ marginLeft: '6px', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>({pct}%)</span>
                   </div>
                 </div>
               );

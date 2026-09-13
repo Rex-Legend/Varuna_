@@ -123,32 +123,33 @@ export default function CitizenReportForm() {
   ];
 
   const getSeverityBadge = (rating: number) => {
-    if (rating >= 4) return { bg: '#fee2e2', color: '#b91c1c', label: `Level ${rating} - Hazard` };
-    if (rating === 3) return { bg: '#fef3c7', color: '#b45309', label: `Level ${rating} - Moderate` };
-    return { bg: '#dcfce7', color: '#15803d', label: `Level ${rating} - Normal` };
+    if (rating >= 4) return { bg: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.4)', label: `Level ${rating} - Hazard` };
+    if (rating === 3) return { bg: 'rgba(234, 179, 8, 0.2)', color: '#fde047', border: '1px solid rgba(234, 179, 8, 0.4)', label: `Level ${rating} - Moderate` };
+    return { bg: 'rgba(34, 197, 94, 0.2)', color: '#86efac', border: '1px solid rgba(34, 197, 94, 0.4)', label: `Level ${rating} - Normal` };
   };
 
   return (
     <div style={{ width: '100%' }}>
       {/* Top Banner */}
       <div style={{
-        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+        background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.3) 0%, rgba(15, 30, 54, 0.9) 100%)',
+        border: '1px solid rgba(56, 189, 248, 0.3)',
         borderRadius: '16px',
         padding: '24px 28px',
         color: '#ffffff',
         marginBottom: '28px',
-        boxShadow: '0 4px 20px rgba(2, 132, 199, 0.25)'
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span style={{ background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>
+          <span style={{ background: 'rgba(56, 189, 248, 0.2)', border: '1px solid rgba(56, 189, 248, 0.35)', color: '#7dd3fc', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>
             Exasol Crowdsource Ingestion
           </span>
           <span style={{ fontSize: '0.8rem', color: '#bae6fd' }}>● Real-time Telemetry Verification</span>
         </div>
-        <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
           📍 Citizen Ground Weather & Disaster Observation Hub
         </h2>
-        <p style={{ color: '#e0f2fe', fontSize: '0.88rem', marginTop: '6px', maxWidth: '750px', lineHeight: 1.5 }}>
+        <p style={{ color: '#94a3b8', fontSize: '0.88rem', marginTop: '6px', maxWidth: '750px', lineHeight: 1.5 }}>
           Contribute real-time ground truth observations to validate automated radar algorithms and trigger community safety advisories.
         </p>
       </div>
@@ -158,9 +159,9 @@ export default function CitizenReportForm() {
           padding: '14px 20px',
           borderRadius: '12px',
           marginBottom: '24px',
-          backgroundColor: message.type === 'success' ? '#dcfce7' : '#fee2e2',
-          color: message.type === 'success' ? '#15803d' : '#b91c1c',
-          border: `1px solid ${message.type === 'success' ? '#86efac' : '#fca5a5'}`,
+          backgroundColor: message.type === 'success' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+          color: message.type === 'success' ? '#86efac' : '#fca5a5',
+          border: `1px solid ${message.type === 'success' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
           fontWeight: 700,
           fontSize: '0.92rem',
           display: 'flex',
@@ -176,13 +177,13 @@ export default function CitizenReportForm() {
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '28px' }}>
         {/* Form Column */}
         <div style={{
-          background: '#ffffff',
+          background: 'rgba(15, 30, 54, 0.85)',
           borderRadius: '16px',
-          border: '1px solid #e2e8f0',
+          border: '1px solid rgba(56, 189, 248, 0.16)',
           padding: '24px',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.04)'
+          boxShadow: '0 8px 24px rgba(0,0,0,0.3)'
         }}>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginBottom: '18px' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginBottom: '18px' }}>
             📝 Submit Real-Time Observation
           </h3>
 
@@ -190,7 +191,7 @@ export default function CitizenReportForm() {
             {/* Name and Location */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '6px' }}>
                   Reporter / Organization *
                 </label>
                 <input
@@ -204,7 +205,9 @@ export default function CitizenReportForm() {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '10px',
-                    border: '1px solid #cbd5e1',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    color: '#f8fafc',
                     fontSize: '0.9rem',
                     outline: 'none'
                   }}
@@ -212,7 +215,7 @@ export default function CitizenReportForm() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '6px' }}>
                   Locality / Landmark *
                 </label>
                 <input
@@ -226,7 +229,9 @@ export default function CitizenReportForm() {
                     width: '100%',
                     padding: '10px 14px',
                     borderRadius: '10px',
-                    border: '1px solid #cbd5e1',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    color: '#f8fafc',
                     fontSize: '0.9rem',
                     outline: 'none'
                   }}
@@ -236,14 +241,14 @@ export default function CitizenReportForm() {
 
             {/* GPS Coordinates with Auto-detect */}
             <div style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              background: 'rgba(10, 22, 40, 0.6)',
+              border: '1px solid rgba(56, 189, 248, 0.15)',
               borderRadius: '12px',
               padding: '14px',
               marginBottom: '18px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#7dd3fc' }}>
                   🛰️ Geospatial Coordinates (Exasol Spatial Ingest)
                 </span>
                 <button
@@ -251,9 +256,9 @@ export default function CitizenReportForm() {
                   onClick={detectLocation}
                   disabled={locating}
                   style={{
-                    background: '#e0f2fe',
-                    color: '#0284c7',
-                    border: '1px solid #bae6fd',
+                    background: 'rgba(2, 132, 199, 0.25)',
+                    color: '#38bdf8',
+                    border: '1px solid rgba(56, 189, 248, 0.35)',
                     padding: '4px 10px',
                     borderRadius: '8px',
                     fontSize: '0.75rem',
@@ -270,7 +275,7 @@ export default function CitizenReportForm() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginBottom: '4px' }}>
+                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, marginBottom: '4px' }}>
                     Latitude
                   </label>
                   <input
@@ -284,14 +289,15 @@ export default function CitizenReportForm() {
                       width: '100%',
                       padding: '8px 12px',
                       borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
                       fontSize: '0.88rem',
-                      background: '#ffffff'
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#f8fafc'
                     }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginBottom: '4px' }}>
+                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, marginBottom: '4px' }}>
                     Longitude
                   </label>
                   <input
@@ -305,9 +311,10 @@ export default function CitizenReportForm() {
                       width: '100%',
                       padding: '8px 12px',
                       borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
                       fontSize: '0.88rem',
-                      background: '#ffffff'
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      color: '#f8fafc'
                     }}
                   />
                 </div>
@@ -316,7 +323,7 @@ export default function CitizenReportForm() {
 
             {/* Condition Pill Picker */}
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>
                 Current Weather Phenomenon *
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
@@ -330,9 +337,9 @@ export default function CitizenReportForm() {
                       style={{
                         padding: '10px 8px',
                         borderRadius: '10px',
-                        border: isSelected ? '2px solid #0284c7' : '1px solid #e2e8f0',
-                        background: isSelected ? '#f0f9ff' : '#ffffff',
-                        color: isSelected ? '#0284c7' : '#334155',
+                        border: isSelected ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+                        background: isSelected ? 'rgba(2, 132, 199, 0.3)' : 'rgba(255, 255, 255, 0.04)',
+                        color: isSelected ? '#38bdf8' : '#cbd5e1',
                         fontWeight: isSelected ? 800 : 600,
                         fontSize: '0.82rem',
                         cursor: 'pointer',
@@ -354,10 +361,10 @@ export default function CitizenReportForm() {
             {/* Precipitation & Thermal Feel */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '6px' }}>
                   Rain Intensity
                 </label>
-                <div style={{ display: 'flex', gap: '4px', background: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                <div style={{ display: 'flex', gap: '4px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '4px', borderRadius: '10px' }}>
                   {rainLevels.map(r => (
                     <button
                       type="button"
@@ -369,7 +376,7 @@ export default function CitizenReportForm() {
                         borderRadius: '8px',
                         border: 'none',
                         background: formData.rain_intensity === r.key ? '#0284c7' : 'transparent',
-                        color: formData.rain_intensity === r.key ? '#ffffff' : '#475569',
+                        color: formData.rain_intensity === r.key ? '#ffffff' : '#94a3b8',
                         fontSize: '0.72rem',
                         fontWeight: 700,
                         cursor: 'pointer'
@@ -382,7 +389,7 @@ export default function CitizenReportForm() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '6px' }}>
                   Thermal Perception
                 </label>
                 <select
@@ -393,11 +400,11 @@ export default function CitizenReportForm() {
                     width: '100%',
                     padding: '8px 12px',
                     borderRadius: '10px',
-                    border: '1px solid #cbd5e1',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
                     fontSize: '0.85rem',
-                    background: '#ffffff',
+                    background: '#0b1d36',
                     fontWeight: 600,
-                    color: '#0f172a'
+                    color: '#f8fafc'
                   }}
                 >
                   <option value="freezing">❄️ Freezing Cold (&lt;10°C)</option>
@@ -410,14 +417,14 @@ export default function CitizenReportForm() {
 
             {/* Severity Rating Slider */}
             <div style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              background: 'rgba(10, 22, 40, 0.6)',
+              border: '1px solid rgba(56, 189, 248, 0.15)',
               borderRadius: '12px',
               padding: '14px',
               marginBottom: '18px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
                   Hazard / Severity Index
                 </span>
                 <span style={{
@@ -425,6 +432,7 @@ export default function CitizenReportForm() {
                   borderRadius: '6px',
                   background: getSeverityBadge(formData.severity_rating).bg,
                   color: getSeverityBadge(formData.severity_rating).color,
+                  border: getSeverityBadge(formData.severity_rating).border,
                   fontSize: '0.78rem',
                   fontWeight: 800
                 }}>
@@ -450,7 +458,7 @@ export default function CitizenReportForm() {
 
             {/* Description Textarea */}
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '6px' }}>
                 Ground Observations & Road Impact *
               </label>
               <textarea
@@ -464,7 +472,9 @@ export default function CitizenReportForm() {
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '10px',
-                  border: '1px solid #cbd5e1',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  color: '#f8fafc',
                   fontSize: '0.88rem',
                   outline: 'none',
                   resize: 'vertical'
@@ -498,34 +508,34 @@ export default function CitizenReportForm() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Telemetry Info Card */}
           <div style={{
-            background: '#ffffff',
+            background: 'rgba(15, 30, 54, 0.85)',
             borderRadius: '16px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid rgba(56, 189, 248, 0.16)',
             padding: '20px',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.04)'
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <span style={{ fontSize: '1.2rem' }}>⚡</span>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
                 Exasol Geospatial Cross-Validation
               </h4>
             </div>
-            <p style={{ color: '#64748b', fontSize: '0.82rem', lineHeight: 1.5, margin: 0 }}>
+            <p style={{ color: '#94a3b8', fontSize: '0.82rem', lineHeight: 1.5, margin: 0 }}>
               Submitted observations are matched to nearest observation stations via Euclidean distance indexing in Exasol, validating official radar telemetry in real-time.
             </p>
           </div>
 
           {/* Submissions List */}
           <div style={{
-            background: '#ffffff',
+            background: 'rgba(15, 30, 54, 0.85)',
             borderRadius: '16px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid rgba(56, 189, 248, 0.16)',
             padding: '20px',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
             flex: 1
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+              <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
                 📡 Live Citizen Reports ({recentReports.length})
               </h4>
               <button
@@ -533,7 +543,7 @@ export default function CitizenReportForm() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#0284c7',
+                  color: '#38bdf8',
                   fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer'
@@ -556,18 +566,18 @@ export default function CitizenReportForm() {
                       key={r.id || i}
                       style={{
                         padding: '14px',
-                        background: '#f8fafc',
+                        background: 'rgba(255, 255, 255, 0.03)',
                         borderRadius: '12px',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
                         borderLeft: `4px solid ${badge.color}`
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
                         <div>
-                          <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0f172a' }}>
+                          <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#f8fafc' }}>
                             {r.reporter_name}
                           </div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
                             📍 {r.reporter_location || r.city_name || 'Observation Point'}
                           </div>
                         </div>
@@ -577,18 +587,19 @@ export default function CitizenReportForm() {
                           padding: '3px 8px',
                           borderRadius: '6px',
                           background: badge.bg,
-                          color: badge.color
+                          color: badge.color,
+                          border: badge.border
                         }}>
                           Severity {r.severity_rating}/5
                         </span>
                       </div>
 
-                      <p style={{ margin: '8px 0 0', fontSize: '0.82rem', color: '#334155', lineHeight: 1.4 }}>
+                      <p style={{ margin: '8px 0 0', fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.4 }}>
                         {r.description}
                       </p>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.72rem', color: '#94a3b8' }}>
-                        <span>Condition: <strong>{r.weather_condition || 'Normal'}</strong></span>
+                        <span>Condition: <strong style={{ color: '#7dd3fc' }}>{r.weather_condition || 'Normal'}</strong></span>
                         <span>{r.timestamp ? new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}</span>
                       </div>
                     </div>

@@ -110,12 +110,12 @@ export default function LiveFeed() {
   const getSeverityBadge = (sev: string) => {
     const s = (sev || '').toLowerCase();
     if (s === 'extreme' || s === 'critical' || s === 'high') {
-      return { bg: '#fee2e2', color: '#991b1b', label: 'CRITICAL' };
+      return { bg: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.4)', label: 'CRITICAL' };
     }
     if (s === 'severe' || s === 'warning') {
-      return { bg: '#ffedd5', color: '#9a3412', label: 'WARNING' };
+      return { bg: 'rgba(249, 115, 22, 0.2)', color: '#fdba74', border: '1px solid rgba(249, 115, 22, 0.4)', label: 'WARNING' };
     }
-    return { bg: '#dcfce7', color: '#15803d', label: 'VERIFIED' };
+    return { bg: 'rgba(34, 197, 94, 0.2)', color: '#86efac', border: '1px solid rgba(34, 197, 94, 0.4)', label: 'VERIFIED' };
   };
 
   const formatEventTime = (iso: string) => {
@@ -298,9 +298,9 @@ export default function LiveFeed() {
             style={{
               padding: '6px 14px',
               borderRadius: '20px',
-              border: sourceFilter === tab.key ? '2px solid #0284c7' : '1px solid #cbd5e1',
-              background: sourceFilter === tab.key ? '#0284c7' : '#ffffff',
-              color: sourceFilter === tab.key ? '#ffffff' : '#334155',
+              border: sourceFilter === tab.key ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.1)',
+              background: sourceFilter === tab.key ? '#0284c7' : 'rgba(255, 255, 255, 0.05)',
+              color: sourceFilter === tab.key ? '#ffffff' : '#94a3b8',
               fontSize: '0.8rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -315,7 +315,7 @@ export default function LiveFeed() {
       {/* Feed Cards Container */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '700px', overflowY: 'auto' }}>
         {filteredEvents.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+          <div style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
             {connected ? 'Waiting for matching live stream events...' : 'Connecting to Exasol streaming cluster...'}
           </div>
         ) : (
@@ -329,12 +329,12 @@ export default function LiveFeed() {
               <div
                 key={ev.id}
                 style={{
-                  background: '#ffffff',
+                  background: 'rgba(15, 30, 54, 0.85)',
                   borderRadius: '16px',
-                  border: '1px solid #e2e8f0',
-                  borderLeft: `5px solid ${src.color}`,
+                  border: '1px solid rgba(56, 189, 248, 0.16)',
+                  borderLeft: `4px solid ${src.color}`,
                   padding: '18px 22px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
                   transition: 'transform 0.15s, box-shadow 0.15s'
                 }}
               >
@@ -358,11 +358,11 @@ export default function LiveFeed() {
 
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>{ev.author}</strong>
-                        <span title="Official Verified Meteorological Channel" style={{ color: '#0284c7', fontSize: '0.85rem' }}>✓</span>
-                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>{ev.handle}</span>
+                        <strong style={{ fontSize: '0.94rem', color: '#f8fafc' }}>{ev.author}</strong>
+                        <span title="Official Verified Meteorological Channel" style={{ color: '#38bdf8', fontSize: '0.85rem' }}>✓</span>
+                        <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{ev.handle}</span>
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
                         📍 {ev.city} • <span style={{ color: src.color, fontWeight: 700 }}>{src.label}</span>
                       </div>
                     </div>
@@ -374,6 +374,7 @@ export default function LiveFeed() {
                       borderRadius: '6px',
                       background: sev.bg,
                       color: sev.color,
+                      border: sev.border,
                       fontSize: '0.7rem',
                       fontWeight: 800
                     }}>
@@ -387,7 +388,7 @@ export default function LiveFeed() {
 
                 {/* Body Text */}
                 <p style={{
-                  color: '#1e293b',
+                  color: '#cbd5e1',
                   fontSize: '0.92rem',
                   lineHeight: 1.5,
                   margin: '0 0 12px',
@@ -399,15 +400,15 @@ export default function LiveFeed() {
                 {/* Media Attachment Pill if present */}
                 {ev.hasMedia && (
                   <div style={{
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
+                    background: 'rgba(56, 189, 248, 0.1)',
+                    border: '1px solid rgba(56, 189, 248, 0.25)',
                     borderRadius: '8px',
                     padding: '6px 12px',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
                     fontSize: '0.78rem',
-                    color: '#0284c7',
+                    color: '#7dd3fc',
                     fontWeight: 700,
                     marginBottom: '12px'
                   }}>
@@ -421,10 +422,10 @@ export default function LiveFeed() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  borderTop: '1px solid #f1f5f9',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                   paddingTop: '10px',
                   fontSize: '0.78rem',
-                  color: '#64748b'
+                  color: '#94a3b8'
                 }}>
                   <div style={{ display: 'flex', gap: '20px' }}>
                     <button
@@ -432,7 +433,7 @@ export default function LiveFeed() {
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: isLiked ? '#ef4444' : '#64748b',
+                        color: isLiked ? '#f87171' : '#94a3b8',
                         fontSize: '0.78rem',
                         fontWeight: 700,
                         cursor: 'pointer',
@@ -456,7 +457,7 @@ export default function LiveFeed() {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: copiedId === ev.id ? '#10b981' : '#0284c7',
+                      color: copiedId === ev.id ? '#4ade80' : '#38bdf8',
                       fontSize: '0.75rem',
                       fontWeight: 700,
                       cursor: 'pointer',

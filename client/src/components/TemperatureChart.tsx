@@ -81,29 +81,29 @@ export default function TemperatureChart() {
       {/* Top Header & Controls Row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
         <div>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
             📈 Multi-Station Climate Trajectory
           </h3>
-          <p style={{ color: '#64748b', fontSize: '0.82rem', marginTop: '3px' }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.82rem', marginTop: '3px' }}>
             Exasol in-memory telemetry aggregated across key Indian urban hubs
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* Metric Selector */}
-          <div style={{ background: '#f1f5f9', padding: '3px', borderRadius: '8px', display: 'flex', gap: '2px' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '3px', borderRadius: '8px', display: 'flex', gap: '2px' }}>
             <button
               onClick={() => setMetric('temp')}
               style={{
                 border: 'none',
-                background: metric === 'temp' ? '#ffffff' : 'transparent',
-                color: metric === 'temp' ? '#0284c7' : '#64748b',
+                background: metric === 'temp' ? '#0284c7' : 'transparent',
+                color: metric === 'temp' ? '#ffffff' : '#94a3b8',
                 padding: '4px 10px',
                 borderRadius: '6px',
                 fontSize: '0.78rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                boxShadow: metric === 'temp' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'
+                boxShadow: metric === 'temp' ? '0 2px 8px rgba(2, 132, 199, 0.4)' : 'none'
               }}
             >
               🌡️ Temp (°C)
@@ -112,14 +112,14 @@ export default function TemperatureChart() {
               onClick={() => setMetric('humidity')}
               style={{
                 border: 'none',
-                background: metric === 'humidity' ? '#ffffff' : 'transparent',
-                color: metric === 'humidity' ? '#0284c7' : '#64748b',
+                background: metric === 'humidity' ? '#0284c7' : 'transparent',
+                color: metric === 'humidity' ? '#ffffff' : '#94a3b8',
                 padding: '4px 10px',
                 borderRadius: '6px',
                 fontSize: '0.78rem',
                 fontWeight: 700,
                 cursor: 'pointer',
-                boxShadow: metric === 'humidity' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'
+                boxShadow: metric === 'humidity' ? '0 2px 8px rgba(2, 132, 199, 0.4)' : 'none'
               }}
             >
               💧 Humidity (%)
@@ -127,7 +127,7 @@ export default function TemperatureChart() {
           </div>
 
           {/* Time Horizon Selector */}
-          <div style={{ background: '#f1f5f9', padding: '3px', borderRadius: '8px', display: 'flex', gap: '2px' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '3px', borderRadius: '8px', display: 'flex', gap: '2px' }}>
             {[
               { key: '24h', label: '24H Diurnal' },
               { key: '7d', label: '7-Day' },
@@ -139,13 +139,13 @@ export default function TemperatureChart() {
                 style={{
                   border: 'none',
                   background: horizon === h.key ? '#0284c7' : 'transparent',
-                  color: horizon === h.key ? '#ffffff' : '#475569',
+                  color: horizon === h.key ? '#ffffff' : '#94a3b8',
                   padding: '4px 10px',
                   borderRadius: '6px',
                   fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  boxShadow: horizon === h.key ? '0 2px 6px rgba(2, 132, 199, 0.3)' : 'none'
+                  boxShadow: horizon === h.key ? '0 2px 8px rgba(2, 132, 199, 0.4)' : 'none'
                 }}
               >
                 {h.label}
@@ -156,9 +156,9 @@ export default function TemperatureChart() {
       </div>
 
       {/* Interactive City Filter Chips Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '14px', background: '#f8fafc', padding: '8px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '14px', background: 'rgba(15, 30, 54, 0.6)', padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(56, 189, 248, 0.15)' }}>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', marginRight: '4px' }}>
+          <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#94a3b8', marginRight: '4px' }}>
             Compare Stations:
           </span>
           {ALL_CITIES.map(city => {
@@ -174,9 +174,9 @@ export default function TemperatureChart() {
                   gap: '6px',
                   padding: '4px 10px',
                   borderRadius: '16px',
-                  border: isSelected ? `2px solid ${color}` : '1px solid #cbd5e1',
-                  background: isSelected ? '#ffffff' : '#f1f5f9',
-                  color: isSelected ? '#0f172a' : '#94a3b8',
+                  border: isSelected ? `1.5px solid ${color}` : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: isSelected ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+                  color: isSelected ? '#f8fafc' : '#64748b',
                   fontSize: '0.76rem',
                   fontWeight: isSelected ? 800 : 500,
                   cursor: 'pointer',
@@ -187,7 +187,7 @@ export default function TemperatureChart() {
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
-                  background: isSelected ? color : '#cbd5e1'
+                  background: isSelected ? color : 'rgba(255, 255, 255, 0.2)'
                 }}></span>
                 {city}
               </button>
@@ -201,7 +201,7 @@ export default function TemperatureChart() {
             style={{
               background: 'none',
               border: 'none',
-              color: '#0284c7',
+              color: '#38bdf8',
               fontSize: '0.72rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -210,13 +210,13 @@ export default function TemperatureChart() {
           >
             Select All
           </button>
-          <span style={{ color: '#cbd5e1' }}>|</span>
+          <span style={{ color: 'rgba(255, 255, 255, 0.2)' }}>|</span>
           <button
             onClick={resetTop3}
             style={{
               background: 'none',
               border: 'none',
-              color: '#64748b',
+              color: '#94a3b8',
               fontSize: '0.72rem',
               fontWeight: 600,
               cursor: 'pointer'
@@ -230,15 +230,15 @@ export default function TemperatureChart() {
       {/* Highlight Stats Snippet */}
       {peakVal > -Infinity && (
         <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', fontSize: '0.78rem' }}>
-          <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', padding: '4px 10px', color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '4px 10px', color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span>🔥 Peak:</span>
             <strong>{peakCity} {peakVal}{unit}</strong>
           </div>
-          <div style={{ background: '#f0f9ff', border: '1px solid #e0f2fe', borderRadius: '8px', padding: '4px 10px', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.3)', borderRadius: '8px', padding: '4px 10px', color: '#7dd3fc', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span>❄️ Low:</span>
             <strong>{minCity} {minVal}{unit}</strong>
           </div>
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '4px 10px', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', padding: '4px 10px', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span>Δ Variance:</span>
             <strong>{(peakVal - minVal).toFixed(1)}{unit}</strong>
           </div>
@@ -248,38 +248,39 @@ export default function TemperatureChart() {
       {/* Chart Canvas */}
       <div style={{ flex: 1, minHeight: '260px', width: '100%', position: 'relative' }}>
         {loading ? (
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#64748b', fontSize: '0.88rem' }}>
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: '#94a3b8', fontSize: '0.88rem' }}>
             Updating Exasol trajectory data...
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 10, right: 15, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.08)" vertical={false} />
               <XAxis 
                 dataKey="label" 
-                stroke="#64748b" 
+                stroke="#94a3b8" 
                 fontSize={11} 
                 tickLine={false} 
-                axisLine={{ stroke: '#cbd5e1' }}
+                axisLine={{ stroke: 'rgba(255, 255, 255, 0.15)' }}
               />
               <YAxis 
-                stroke="#64748b" 
+                stroke="#94a3b8" 
                 fontSize={11} 
                 unit={unit} 
                 tickLine={false} 
-                axisLine={{ stroke: '#cbd5e1' }} 
+                axisLine={{ stroke: 'rgba(255, 255, 255, 0.15)' }} 
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#09182d',
                   borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  boxShadow: '0 12px 32px rgba(0,0,0,0.6)',
                   fontSize: '0.82rem',
-                  padding: '10px 14px'
+                  padding: '10px 14px',
+                  color: '#f8fafc'
                 }}
                 formatter={(val: any, name: any) => [`${val} ${unit}`, name]}
-                labelStyle={{ fontWeight: 800, color: '#0f172a', marginBottom: '6px' }}
+                labelStyle={{ fontWeight: 800, color: '#38bdf8', marginBottom: '6px' }}
               />
               {activeCities.map(city => (
                 <Line

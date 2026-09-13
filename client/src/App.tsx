@@ -645,9 +645,9 @@ function App() {
                 alignItems: 'center',
                 gap: '20px',
                 padding: '16px 20px',
-                background: '#f8fafc',
+                background: 'rgba(15, 30, 54, 0.9)',
                 borderRadius: '16px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
                 marginBottom: '20px'
               }}>
                 <div style={{
@@ -661,19 +661,19 @@ function App() {
                   justifyContent: 'center',
                   fontSize: '1.6rem',
                   fontWeight: 900,
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)'
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
                 }}>
                   {selectedStation.temperature}°
                 </div>
 
                 <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
                     {selectedStation.weather_condition || 'Clear Sky'}
                   </h3>
-                  <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '4px' }}>
-                    Climate Zone: <strong>{selectedStation.climate_zone || 'Tropical'}</strong>
+                  <div style={{ fontSize: '0.82rem', color: '#94a3b8', marginTop: '4px' }}>
+                    Climate Zone: <strong style={{ color: '#cbd5e1' }}>{selectedStation.climate_zone || 'Tropical'}</strong>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#0284c7', fontWeight: 600, marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 600, marginTop: '2px' }}>
                     Coordinates: {selectedStation.latitude?.toFixed(4) || '28.61'}, {selectedStation.longitude?.toFixed(4) || '77.20'}
                   </div>
                 </div>
@@ -681,30 +681,30 @@ function App() {
 
               {/* 4-grid metrics */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '20px' }}>
-                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Feels Like (Apparent)</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Feels Like (Apparent)</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginTop: '2px' }}>
                     {selectedStation.apparent_temperature || selectedStation.temperature}°C
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Relative Humidity</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0284c7', marginTop: '2px' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Relative Humidity</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#38bdf8', marginTop: '2px' }}>
                     {selectedStation.humidity || 70}%
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Surface Wind Speed</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Surface Wind Speed</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc', marginTop: '2px' }}>
                     {selectedStation.wind_speed || 12} km/h
                   </div>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Observed Rainfall</div>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0284c7', marginTop: '2px' }}>
+                <div style={{ background: 'rgba(255, 255, 255, 0.04)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Observed Rainfall</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#38bdf8', marginTop: '2px' }}>
                     {selectedStation.rainfall || 0} mm
                   </div>
                 </div>
@@ -740,9 +740,9 @@ function App() {
                   }}
                   style={{
                     flex: 1,
-                    background: '#f1f5f9',
-                    color: '#334155',
-                    border: '1px solid #cbd5e1',
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    color: '#cbd5e1',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
                     padding: '12px',
                     borderRadius: '12px',
                     fontSize: '0.9rem',
