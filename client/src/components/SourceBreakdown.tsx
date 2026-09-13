@@ -30,7 +30,36 @@ export default function SourceBreakdown() {
     'Public Datasets': { color: '#f59e0b', icon: '📂' }
   };
 
+  const [hoveredItem, setHoveredItem] = useState<SourceItem | null>(null);
+
   const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const entry = payload[0];
+      const cfg = COLORS[entry.name] || { color: '#38bdf8', icon: '📊' };
+      const pct = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0';
+      return (
+        <div style={{
+          backgroundColor: '#0b192e',
+          borderRadius: '10px',
+          border: `1.5px solid ${cfg.color}`,
+          padding: '8px 14px',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.7)',
+          color: '#ffffff'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+            <span style={{ fontSize: '1rem' }}>{cfg.icon}</span>
+            <span style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.9rem' }}>{entry.name}</span>
+          </div>
+          <div style={{ fontSize: '0.84rem', color: cfg.color, fontWeight: 800 }}>
+            {Number(entry.value).toLocaleString()} records <span style={{ color: '#7dd3fc', fontWeight: 600 }}>({pct}%)</span>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -60,22 +89,20 @@ export default function SourceBreakdown() {
                   paddingAngle={4}
                   dataKey="value"
                   nameKey="name"
+                  onMouseEnter={(entry) => setHoveredItem(entry)}
+                  onMouseLeave={() => setHoveredItem(null)}
                 >
                   {data.map((entry) => (
-                    <Cell key={entry.name} fill={COLORS[entry.name]?.color || '#94a3b8'} />
+                    <Cell 
+                      key={entry.name} 
+                      fill={COLORS[entry.name]?.color || '#94a3b8'} 
+                      stroke={hoveredItem?.name === entry.name ? '#ffffff' : '#0b192e'}
+                      strokeWidth={hoveredItem?.name === entry.name ? 2 : 1}
+                      style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                    />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#09182d',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(56, 189, 248, 0.3)',
-                    color: '#ffffff',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                    fontSize: '0.85rem'
-                  }}
-                  formatter={(value: any) => [`${Number(value).toLocaleString()} records`, 'Count']}
-                />
+                <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
 
@@ -85,13 +112,29 @@ export default function SourceBreakdown() {
               left: '50%',
               transform: 'translate(-50%, -50%)',
               textAlign: 'center',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              maxWidth: '120px'
             }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f8fafc', lineHeight: 1 }}>
-                {total.toLocaleString()}
+              <div style={{ 
+                fontSize: '1.25rem', 
+                fontWeight: 900, 
+                color: hoveredItem ? (COLORS[hoveredItem.name]?.color || '#38bdf8') : '#f8fafc', 
+                lineHeight: 1.1,
+                transition: 'color 0.15s ease'
+              }}>
+                {(hoveredItem ? hoveredItem.value : total).toLocaleString()}
               </div>
-              <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px' }}>
-                Total Rows
+              <div style={{ 
+                fontSize: '0.68rem', 
+                color: hoveredItem ? '#38bdf8' : '#7dd3fc', 
+                fontWeight: 800, 
+                textTransform: 'uppercase', 
+                marginTop: '4px',
+                letterSpacing: '0.04em',
+                lineHeight: 1.2,
+                transition: 'color 0.15s ease'
+              }}>
+                {hoveredItem ? hoveredItem.name : 'Total Rows'}
               </div>
             </div>
           </div>
@@ -101,30 +144,40 @@ export default function SourceBreakdown() {
             {data.map(item => {
               const cfg = COLORS[item.name] || { color: '#64748b', icon: '📌' };
               const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : '0';
+              const isHovered = hoveredItem?.name === item.name;
               return (
-                <div key={item.name} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 12px',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  fontSize: '0.82rem'
-                }}>
+                <div 
+                  key={item.name} 
+                  onMouseEnter={() => setHoveredItem(item)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    background: isHovered ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                    borderRadius: '10px',
+                    border: isHovered ? `1px solid ${cfg.color}` : '1px solid rgba(255, 255, 255, 0.08)',
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    boxShadow: isHovered ? `0 2px 10px ${cfg.color}30` : 'none'
+                  }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{
                       width: '10px',
                       height: '10px',
                       borderRadius: '50%',
-                      background: cfg.color
+                      background: cfg.color,
+                      boxShadow: isHovered ? `0 0 8px ${cfg.color}` : 'none'
                     }}></span>
-                    <span style={{ fontWeight: 700, color: '#f8fafc' }}>
+                    <span style={{ fontWeight: 700, color: isHovered ? '#ffffff' : '#f8fafc' }}>
                       {cfg.icon} {item.name}
                     </span>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontWeight: 800, color: '#38bdf8' }}>{item.value.toLocaleString()}</span>
+                    <span style={{ fontWeight: 800, color: cfg.color }}>{item.value.toLocaleString()}</span>
                     <span style={{ marginLeft: '6px', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600 }}>({pct}%)</span>
                   </div>
                 </div>

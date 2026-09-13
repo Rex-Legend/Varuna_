@@ -422,7 +422,7 @@ function App() {
 
             <div className="weather-stat-tile">
               <div className="stat-tile-label">Exasol In-Memory Records</div>
-              <div className="stat-tile-val" style={{ color: '#0f172a' }}>
+              <div className="stat-tile-val" style={{ color: '#10b981' }}>
                 {kpis?.total_records?.toLocaleString() || '5,540'}
               </div>
               <div className="stat-tile-tag" style={{ color: '#10b981' }}>⚡ Sub-second SQL Aggregation</div>
@@ -430,10 +430,10 @@ function App() {
 
             <div className="weather-stat-tile">
               <div className="stat-tile-label">#IMD Posts Tracked</div>
-              <div className="stat-tile-val" style={{ color: '#7e22ce' }}>
+              <div className="stat-tile-val" style={{ color: '#c084fc' }}>
                 {kpis?.total_social_posts || '45'}
               </div>
-              <div className="stat-tile-tag" style={{ color: '#7e22ce' }}>NLP Sentiment & Media</div>
+              <div className="stat-tile-tag" style={{ color: '#c084fc' }}>NLP Sentiment & Media</div>
             </div>
           </div>
         </div>
