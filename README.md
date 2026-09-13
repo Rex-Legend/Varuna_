@@ -1,4 +1,4 @@
-﻿# Varuna (वरुण) — National Weather Big Data Analytics Platform
+# Varuna (वरुण) — National Weather Big Data Analytics Platform
 
 [![Engine](https://img.shields.io/badge/Database-Exasol%20In--Memory-blue.svg)](https://www.exasol.com/)
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%7C%20Vite-61dafb.svg)](https://reactjs.org/)
@@ -122,7 +122,7 @@ npm test
 
 ## 📦 Production Deployment
 
-For detailed production instructions using **Docker**, **Nginx**, and **PM2**, please consult the [DEPLOYMENT.md](DEPLOYMENT.md) guide.
+For detailed production instructions using **Nginx**, **PM2**, and Linux system services, please consult the [DEPLOYMENT.md](DEPLOYMENT.md) guide.
 
 ---
 
