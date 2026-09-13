@@ -41,11 +41,40 @@ function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedStation, setSelectedStation] = useState<CityWeather | null>(null);
   const [kpis, setKpis] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState<string>('');
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     axios.get('/api/cities').then(res => setCities(res.data)).catch(() => {});
     axios.get('/api/analytics/kpis').then(res => setKpis(res.data)).catch(() => {});
+  }, []);
+
+  // Live IST Clock
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) + ' IST');
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Keyboard shortcut Ctrl+K / Cmd+K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setSearchOpen(true);
+      }
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Click outside listener for search dropdown
@@ -74,24 +103,68 @@ function App() {
 
   return (
     <div>
+      {/* 0. Top Micro Utility Bar */}
+      <div className="top-utility-bar">
+        <div className="utility-inner">
+          <div className="utility-left">
+            <span className="utility-gov-tag">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                <path d="M2 12h20"></path>
+              </svg>
+              INDIAN METEOROLOGICAL TELEMETRY GRID • EXASOL CLUSTER MESH
+            </span>
+          </div>
+
+          <div className="utility-right">
+            <div className="utility-metric-chip">
+              <span className="pulse-green-dot"></span>
+              <span>50/50 Ground Stations Active</span>
+            </div>
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
+            <div className="utility-metric-chip">
+              <span>⚡ Exasol Analytics Latency: <strong>11.4ms</strong></span>
+            </div>
+            <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
+            <div className="utility-metric-chip" style={{ color: '#7dd3fc', fontWeight: 700 }}>
+              <span>🕒 {currentTime || 'LIVE IST'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 1. Atmospheric Sky Header */}
       <header className="weather-header">
         <div className="header-inner">
+          {/* Professional Brand Insignia */}
           <a href="#" className="weather-brand" onClick={(e) => { e.preventDefault(); setActiveTab('overview'); }}>
-            <div className="brand-weather-badge">VARUNA 🌦️</div>
+            <div className="brand-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 3a9 9 0 0 1 9 9"></path>
+                <circle cx="12" cy="12" r="5"></circle>
+                <circle cx="12" cy="12" r="1.5" fill="#38bdf8"></circle>
+                <line x1="12" y1="12" x2="18.5" y2="5.5" stroke="#38bdf8" strokeWidth="2"></line>
+              </svg>
+            </div>
             <div className="brand-title">
-              <h1>Varuna — National Weather Big Data Platform</h1>
-              <span>Exasol In-Memory Meteorological Telemetry & Multi-Source Intelligence</span>
+              <h1>VARUNA <span className="highlight">PLATFORM</span></h1>
+              <span className="sub">National Weather Big Data Telemetry & Disaster Intelligence</span>
             </div>
           </a>
 
           {/* Working Central Search Pill with Autocomplete Dropdown */}
           <div className="search-wrapper-rel" ref={searchContainerRef}>
             <div className="search-pill-box">
-              <span style={{ fontSize: '1rem' }}>🔍</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
               <input 
+                ref={searchInputRef}
                 type="text" 
-                placeholder="Search station, city, or state across India..." 
+                placeholder="Search station, city, or state (e.g. Mumbai, Delhi, Assam)..." 
                 value={search}
                 onChange={e => {
                   setSearch(e.target.value);
@@ -99,6 +172,7 @@ function App() {
                 }}
                 onFocus={() => setSearchOpen(true)}
               />
+              <span className="kbd-badge">Ctrl K</span>
               {search && (
                 <button
                   onClick={() => {
@@ -202,9 +276,24 @@ function App() {
             )}
           </div>
 
-          <div className="header-engine-pill">
-            <span>⚡ Engine:</span>
-            <strong>Exasol In-Memory Columnar</strong>
+          {/* Header Action Items */}
+          <div className="header-right-actions">
+            <div className="header-db-pill" title="In-Memory Multi-Threaded Columnar Database">
+              <span className="pulse-green-dot"></span>
+              <div>
+                <span className="db-title">Exasol Engine</span>
+                <span className="db-latency"> • In-Memory</span>
+              </div>
+            </div>
+
+            <button 
+              className="header-alert-chip"
+              onClick={() => setActiveTab('alerts')}
+              title="View Active Disaster Bulletins"
+            >
+              <span>🚨</span>
+              <span>{kpis?.active_alerts || 5} Bulletins</span>
+            </button>
           </div>
         </div>
       </header>
@@ -216,37 +305,68 @@ function App() {
             className={`weather-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
             onClick={() => setActiveTab('overview')}
           >
-            🇮🇳 India Overview
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Overview</span>
           </button>
           <button 
             className={`weather-tab-btn ${activeTab === 'map' ? 'active' : ''}`}
             onClick={() => setActiveTab('map')}
           >
-            🛰️ Geospatial Radar Map
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="2" x2="12" y2="12"></line>
+              <line x1="12" y1="12" x2="19" y2="19"></line>
+            </svg>
+            <span>GIS Radar Doppler</span>
           </button>
           <button 
             className={`weather-tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
             onClick={() => setActiveTab('analytics')}
           >
-            📊 Big Data Climate Trends
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            <span>Climate Trends</span>
           </button>
           <button 
             className={`weather-tab-btn ${activeTab === 'feed' ? 'active' : ''}`}
             onClick={() => setActiveTab('feed')}
           >
-            📱 Live #IMD Feed
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"></path>
+              <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"></path>
+              <circle cx="12" cy="12" r="2"></circle>
+              <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"></path>
+              <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"></path>
+            </svg>
+            <span>Live Crisis Stream</span>
           </button>
           <button 
             className={`weather-tab-btn ${activeTab === 'report' ? 'active' : ''}`}
             onClick={() => setActiveTab('report')}
           >
-            ✍️ Citizen Weather Report
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Citizen Observations</span>
           </button>
           <button 
             className={`weather-tab-btn ${activeTab === 'alerts' ? 'active' : ''}`}
             onClick={() => setActiveTab('alerts')}
           >
-            🚨 Emergency Bulletins ({kpis?.active_alerts || 5})
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>Emergency Bulletins</span>
+            <span className="tab-badge">{kpis?.active_alerts || 5}</span>
           </button>
         </div>
       </nav>
