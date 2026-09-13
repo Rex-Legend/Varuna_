@@ -23,11 +23,11 @@ export default function SourceBreakdown() {
   }, []);
 
   const COLORS: Record<string, { color: string; icon: string }> = {
-    'API Records': { color: '#0284c7', icon: '🌐' },
-    'Social Posts': { color: '#9333ea', icon: '📱' },
-    'Citizen Reports': { color: '#10b981', icon: '👥' },
-    'Disaster Alerts': { color: '#ef4444', icon: '🚨' },
-    'Public Datasets': { color: '#f59e0b', icon: '📂' }
+    'API Records': { color: '#0ea5e9', icon: '🌐' },       // Vibrant electric sky blue
+    'Public Datasets': { color: '#f59e0b', icon: '📂' },   // High-contrast warm gold
+    'Social Posts': { color: '#d946ef', icon: '📱' },      // Neon fuchsia / vivid purple (high contrast)
+    'Disaster Alerts': { color: '#f43f5e', icon: '🚨' },   // Vivid neon rose red
+    'Citizen Reports': { color: '#10b981', icon: '👥' }    // Vivid neon emerald green
   };
 
   const [hoveredItem, setHoveredItem] = useState<SourceItem | null>(null);
@@ -41,19 +41,22 @@ export default function SourceBreakdown() {
       const pct = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0';
       return (
         <div style={{
-          backgroundColor: '#0b192e',
+          backgroundColor: '#071527',
           borderRadius: '10px',
-          border: `1.5px solid ${cfg.color}`,
-          padding: '8px 14px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.7)',
-          color: '#ffffff'
+          border: `2px solid ${cfg.color}`,
+          padding: '9px 14px',
+          boxShadow: '0 12px 32px rgba(0,0,0,0.85)',
+          color: '#ffffff',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          zIndex: 9999
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
             <span style={{ fontSize: '1rem' }}>{cfg.icon}</span>
-            <span style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.9rem' }}>{entry.name}</span>
+            <span style={{ fontWeight: 800, color: '#ffffff', fontSize: '0.9rem' }}>{entry.name}</span>
           </div>
-          <div style={{ fontSize: '0.84rem', color: cfg.color, fontWeight: 800 }}>
-            {Number(entry.value).toLocaleString()} records <span style={{ color: '#7dd3fc', fontWeight: 600 }}>({pct}%)</span>
+          <div style={{ fontSize: '0.86rem', color: cfg.color, fontWeight: 800 }}>
+            {Number(entry.value).toLocaleString()} records <span style={{ color: '#7dd3fc', fontWeight: 700 }}>({pct}%)</span>
           </div>
         </div>
       );
@@ -75,34 +78,39 @@ export default function SourceBreakdown() {
       {data.length === 0 ? (
         <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>Loading source distribution...</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', alignItems: 'center', flex: 1 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'center', flex: 1 }}>
           {/* Donut Chart with Center Total */}
-          <div style={{ position: 'relative', width: '100%', height: '220px' }}>
+          <div style={{ position: 'relative', width: '100%', height: '250px', overflow: 'visible' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 15, right: 15, bottom: 15, left: 15 }}>
                 <Pie
                   data={data}
                   cx="50%"
                   cy="50%"
-                  innerRadius={65}
-                  outerRadius={95}
-                  paddingAngle={4}
+                  innerRadius={55}
+                  outerRadius={85}
+                  minAngle={14}
+                  paddingAngle={3}
                   dataKey="value"
                   nameKey="name"
                   onMouseEnter={(entry) => setHoveredItem(entry)}
                   onMouseLeave={() => setHoveredItem(null)}
                 >
-                  {data.map((entry) => (
-                    <Cell 
-                      key={entry.name} 
-                      fill={COLORS[entry.name]?.color || '#94a3b8'} 
-                      stroke={hoveredItem?.name === entry.name ? '#ffffff' : '#0b192e'}
-                      strokeWidth={hoveredItem?.name === entry.name ? 2 : 1}
-                      style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-                    />
-                  ))}
+                  {data.map((entry) => {
+                    const cfg = COLORS[entry.name] || { color: '#94a3b8' };
+                    const isHovered = hoveredItem?.name === entry.name;
+                    return (
+                      <Cell 
+                        key={entry.name} 
+                        fill={cfg.color} 
+                        stroke={isHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.3)'}
+                        strokeWidth={isHovered ? 2.5 : 1.5}
+                        style={{ cursor: 'pointer', transition: 'all 0.2s ease', filter: isHovered ? 'drop-shadow(0 0 6px rgba(255,255,255,0.6))' : 'none' }}
+                      />
+                    );
+                  })}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip />} wrapperStyle={{ zIndex: 1000, pointerEvents: 'none' }} allowEscapeViewBox={{ x: true, y: true }} />
               </PieChart>
             </ResponsiveContainer>
 
@@ -113,12 +121,12 @@ export default function SourceBreakdown() {
               transform: 'translate(-50%, -50%)',
               textAlign: 'center',
               pointerEvents: 'none',
-              maxWidth: '120px'
+              width: '100px'
             }}>
               <div style={{ 
                 fontSize: '1.25rem', 
                 fontWeight: 900, 
-                color: hoveredItem ? (COLORS[hoveredItem.name]?.color || '#38bdf8') : '#f8fafc', 
+                color: hoveredItem ? (COLORS[hoveredItem.name]?.color || '#38bdf8') : '#ffffff', 
                 lineHeight: 1.1,
                 transition: 'color 0.15s ease'
               }}>
@@ -132,7 +140,10 @@ export default function SourceBreakdown() {
                 marginTop: '4px',
                 letterSpacing: '0.04em',
                 lineHeight: 1.2,
-                transition: 'color 0.15s ease'
+                transition: 'color 0.15s ease',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}>
                 {hoveredItem ? hoveredItem.name : 'Total Rows'}
               </div>
@@ -155,13 +166,13 @@ export default function SourceBreakdown() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '8px 12px',
-                    background: isHovered ? 'rgba(56, 189, 248, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                    background: isHovered ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.04)',
                     borderRadius: '10px',
-                    border: isHovered ? `1px solid ${cfg.color}` : '1px solid rgba(255, 255, 255, 0.08)',
+                    border: isHovered ? `1.5px solid ${cfg.color}` : '1px solid rgba(255, 255, 255, 0.1)',
                     fontSize: '0.82rem',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    boxShadow: isHovered ? `0 2px 10px ${cfg.color}30` : 'none'
+                    boxShadow: isHovered ? `0 4px 14px ${cfg.color}35` : 'none'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -170,7 +181,7 @@ export default function SourceBreakdown() {
                       height: '10px',
                       borderRadius: '50%',
                       background: cfg.color,
-                      boxShadow: isHovered ? `0 0 8px ${cfg.color}` : 'none'
+                      boxShadow: isHovered ? `0 0 10px ${cfg.color}` : `0 0 4px ${cfg.color}80`
                     }}></span>
                     <span style={{ fontWeight: 700, color: isHovered ? '#ffffff' : '#f8fafc' }}>
                       {cfg.icon} {item.name}
