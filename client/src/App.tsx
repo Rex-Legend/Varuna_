@@ -445,10 +445,10 @@ function App() {
             <div className="weather-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>
                     🌤️ Real-Time Regional Temperature Ranking
                   </h2>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                  <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
                     Click any station to inspect live sensor telemetry and Exasol records
                   </span>
                 </div>

@@ -65,10 +65,10 @@ export default function WeatherMap() {
       {/* Top Map Interactive Controls */}
       <div className="map-toolbar-row">
         <div>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#f8fafc' }}>
             🛰️ Live Meteorological Radar & Satellite Mesh
           </h3>
-          <p style={{ color: '#64748b', fontSize: '0.82rem' }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.82rem' }}>
             Multi-layer geospatial telemetry across 50 national monitoring stations
           </p>
         </div>
