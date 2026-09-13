@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  exasol-db:
+    image: exasol/docker-db:latest
+    container_name: exasol-db
+    privileged: true
+    ports:
+      - "8563:8563"
+      - "2580:2580"
+    restart: unless-stopped
+
+  weather-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: weather-server
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - EXASOL_HOST=exasol-db
+      - EXASOL_PORT=8563
+      - EXASOL_USER=sys
+      - EXASOL_PASSWORD=exasol
+    depends_on:
+      - exasol-db
+    restart: unless-stopped
+
+  weather-client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: weather-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - weather-server
+    restart: unless-stopped
