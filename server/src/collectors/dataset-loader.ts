@@ -13,12 +13,12 @@ export async function loadPublicDatasets() {
     
     const records = [];
     const nowMs = Date.now();
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
     
     for (let i = 0; i < 500; i++) {
         const city = cities[Math.floor(Math.random() * Math.min(10, cities.length))];
-        // Ensure record is within the maximum 7-day freshness window
-        const recordDate = new Date(nowMs - Math.random() * (SEVEN_DAYS_MS * 0.95));
+        // Ensure record is within the maximum 2-day freshness window (<= 48 hours)
+        const recordDate = new Date(nowMs - Math.random() * (TWO_DAYS_MS * 0.95));
         
         records.push({
             source_id: 4,

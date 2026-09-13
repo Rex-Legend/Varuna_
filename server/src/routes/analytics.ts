@@ -78,7 +78,7 @@ router.get('/climate-zones', (req, res) => {
 
 router.get('/extremes', (req, res) => {
     const nowMs = Date.now();
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000; // at most 2 days (48 hours)
     const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
     const baseEvents = [
@@ -108,10 +108,10 @@ router.get('/extremes', (req, res) => {
             max_temp: 31.0, 
             rainfall: 280.0, 
             wind: 125, 
-            severity_score: 93.8,
-            meteorological_cause: 'Rapid intensification of coastal cyclonic system over warm 30.5°C ocean waters',
-            impact_summary: 'Wind gusts reaching 125 km/h; coastal power infrastructure disrupted; widespread storm surges',
-            official_advisory: 'Port cautionary signal 8 hoisted; marine vessels instructed to moor in sheltered anchorages',
+            severity_score: 94.8,
+            meteorological_cause: 'Intensification over warm Bay of Bengal waters (SST 30.5°C) with low vertical wind shear',
+            impact_summary: 'Squally coastal gale 120-130 km/h; tidal surge inundating low-lying blocks in Jagatsinghpur and Kendrapara',
+            official_advisory: 'Red Landfall Warning sounded; deep-sea fishermen recall completed; ODRAF emergency shelters active',
             query_exec_time_ms: 8.7
         },
         { 
@@ -152,7 +152,7 @@ router.get('/extremes', (req, res) => {
             state: 'Delhi NCR',
             event_type: 'heatwave',
             category_label: 'Severe Urban Heat Island',
-            age_ms: 32 * 3600 * 1000, // 1.3 days ago (NEW)
+            age_ms: 28 * 3600 * 1000, // 1.1 days ago (NEW, <= 2d)
             max_temp: 46.8, 
             rainfall: 5.0, 
             wind: 38, 
@@ -168,7 +168,7 @@ router.get('/extremes', (req, res) => {
             state: 'Assam',
             event_type: 'flood',
             category_label: 'Brahmaputra River Inundation',
-            age_ms: 68 * 3600 * 1000, // 2.8 days ago (NEW)
+            age_ms: 34 * 3600 * 1000, // 1.4 days ago (NEW, <= 2d)
             max_temp: 27.5, 
             rainfall: 195.4, 
             wind: 40, 
@@ -184,13 +184,13 @@ router.get('/extremes', (req, res) => {
             state: 'Maharashtra',
             event_type: 'heatwave',
             category_label: 'Vidarbha Core Heatwave',
-            age_ms: 96 * 3600 * 1000, // 4 days ago (NEW)
+            age_ms: 40 * 3600 * 1000, // 1.6 days ago (NEW, <= 2d)
             max_temp: 45.4, 
             rainfall: 12.0, 
             wind: 32, 
             severity_score: 79.1,
             meteorological_cause: 'Central continental high-pressure cell preventing cloud development and convective cooling',
-            impact_summary: 'Dry blistering heat prevailing for 6 consecutive days; citrus crop stress noted',
+            impact_summary: 'Dry blistering heat prevailing for consecutive daytime cycles; citrus crop stress noted',
             official_advisory: 'Municipal Cooling Centers opened across city transit nodes and bus terminals',
             query_exec_time_ms: 7.9
         },
@@ -200,7 +200,7 @@ router.get('/extremes', (req, res) => {
             state: 'Tamil Nadu',
             event_type: 'cyclone',
             category_label: 'Coastal Gale & Heavy Rain',
-            age_ms: 130 * 3600 * 1000, // 5.4 days ago (NEW, <= 7d)
+            age_ms: 44 * 3600 * 1000, // 1.8 days ago (NEW, <= 2d)
             max_temp: 36.2, 
             rainfall: 140.0, 
             wind: 58, 
@@ -212,9 +212,9 @@ router.get('/extremes', (req, res) => {
         }
     ];
 
-    // Filter out any event older than 7 days
+    // Filter out any event older than 2 days (48 hours)
     const validEvents = baseEvents
-        .filter(ev => ev.age_ms <= SEVEN_DAYS_MS)
+        .filter(ev => ev.age_ms <= TWO_DAYS_MS)
         .map(ev => {
             const date = new Date(nowMs - ev.age_ms).toISOString();
             const isLive = ev.age_ms <= TWO_HOURS_MS;
@@ -222,6 +222,7 @@ router.get('/extremes', (req, res) => {
                 ...ev,
                 date,
                 freshness: isLive ? 'LIVE' : 'NEW',
+                is_within_2days: true,
                 is_within_week: true,
                 age_hours: Math.floor(ev.age_ms / (1000 * 3600)),
                 age_days: Math.floor(ev.age_ms / (1000 * 3600 * 24))
@@ -266,9 +267,9 @@ router.get('/trends', (req, res) => {
         return res.json(data);
     }
 
-    if (horizon === '7d') {
-        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        const data = days.map((d, idx) => ({
+    if (horizon === '48h' || horizon === '7d') {
+        const intervals = ['-42h', '-36h', '-30h', '-24h', '-18h', '-12h', '-6h', 'Live'];
+        const data = intervals.map((d, idx) => ({
             label: d,
             'Delhi': Math.round((34 + Math.sin(idx) * 3) * 10) / 10,
             'Mumbai': Math.round((31 + Math.cos(idx) * 1.5) * 10) / 10,

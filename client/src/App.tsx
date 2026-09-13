@@ -133,7 +133,7 @@ function App() {
             <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
             <div className="utility-metric-chip" style={{ color: '#86efac' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }}></span>
-              <span>7-Day Freshness Filter Active (Live & New)</span>
+              <span>2-Day Freshness Filter Active (Live & New, &le;48h)</span>
             </div>
             <span style={{ color: 'rgba(255,255,255,0.2)' }}>|</span>
             <div className="utility-metric-chip">

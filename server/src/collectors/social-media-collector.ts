@@ -284,11 +284,11 @@ function generateSimulatedPosts(cities: any[]) {
         const loc = detectLocation(finalContent, cities) || { city_id: cityObj.id, city: cityObj.city, state: cityObj.state, lat: cityObj.lat, lon: cityObj.lon };
 
         const nowMs = Date.now();
-        // 50% within last 2 hours (LIVE), 50% between 2 hours and 5 days ago (NEW, <= 7d)
+        // 50% within last 2 hours (LIVE), 50% between 2 hours and 44 hours ago (NEW, <= 2 days / 48h)
         const isLiveSample = Math.random() > 0.5;
         const ageMs = isLiveSample 
             ? Math.floor(Math.random() * (110 * 60 * 1000))
-            : Math.floor(2 * 3600 * 1000 + Math.random() * (5 * 24 * 3600 * 1000));
+            : Math.floor(2 * 3600 * 1000 + Math.random() * (42 * 3600 * 1000));
         const postedDate = new Date(nowMs - ageMs);
 
         posts.push({
@@ -302,6 +302,7 @@ function generateSimulatedPosts(cities: any[]) {
             posted_at: postedDate.toISOString(),
             freshness: isLiveSample ? 'LIVE' : 'NEW',
             is_within_week: true,
+            is_within_2days: true,
             geo_validation: 'VERIFIED_CLIMATIC_ZONE',
             matched_hashtags: matched.join(','),
             all_hashtags: allHashtags.join(','),
@@ -332,19 +333,19 @@ function generateSimulatedPosts(cities: any[]) {
 }
 
 export async function collectSocialMedia() {
-    console.log('[Social] Collecting verified #IMD meteorological posts...');
+    console.log('[Social] Collecting verified #IMD meteorological posts (max 2 days old)...');
     const cities = getAllData('DIM_CITIES');
     const newPosts = generateSimulatedPosts(cities);
     
-    // Strict 7-day retention guard AND Fact-Check verification purge:
-    // Any legacy post that is > 7 days old OR contains scientifically impossible weather combinations is purged!
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    // Strict 2-day retention guard AND Fact-Check verification purge:
+    // Any legacy post that is > 2 days old (48 hours) OR contains scientifically impossible weather combinations is purged!
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
     const nowMs = Date.now();
     const existing = getAllData('FACT_SOCIAL_MEDIA_POSTS') || [];
     
     const validExisting = existing.filter(p => {
         const postTime = new Date(p.posted_at).getTime();
-        if ((nowMs - postTime) > SEVEN_DAYS_MS) return false;
+        if ((nowMs - postTime) > TWO_DAYS_MS) return false;
         
         // Strict Fact-Check gatekeeper filter: eliminates old bogus posts like "snowfall near Raipur"
         const check = validateMeteorologicalFactCheck(p.post_text || '', p.detected_city, p.detected_state);
@@ -360,5 +361,5 @@ export async function collectSocialMedia() {
     
     const severeCount = newPosts.filter(p => p.severity_level === 'severe' || p.severity_level === 'extreme').length;
     const mediaCount = newPosts.filter(p => p.has_photo || p.has_video).length;
-    console.log(`[Social] Ingested ${newPosts.length} verified posts (Severe: ${severeCount}, Media: ${mediaCount}). Total authentic active posts: ${trimmed.length}`);
+    console.log(`[Social] Ingested ${newPosts.length} verified posts (Severe: ${severeCount}, Media: ${mediaCount}). Total authentic active posts within 2 days: ${trimmed.length}`);
 }

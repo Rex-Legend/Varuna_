@@ -557,7 +557,7 @@ export default function CitizenReportForm() {
               </button>
             </div>
 
-            {/* 7-Day Freshness Guard Policy Tag */}
+            {/* 2-Day Freshness Guard Policy Tag */}
             <div style={{
               background: 'rgba(56, 189, 248, 0.08)',
               border: '1px solid rgba(56, 189, 248, 0.2)',
@@ -571,13 +571,13 @@ export default function CitizenReportForm() {
               color: '#7dd3fc',
               fontWeight: 700
             }}>
-              <span>🛡️ 7-Day Ground Truth Filter</span>
+              <span>🛡️ 2-Day Ground Truth Filter</span>
               <span style={{ color: '#94a3b8', fontWeight: 500 }}>Older reports purged</span>
             </div>
 
             {recentReports.length === 0 ? (
               <div style={{ padding: '30px', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
-                No active citizen reports logged within the last 7 days. Submit the first observation!
+                No active citizen reports logged within the last 2 days (48 hours). Submit the first observation!
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '520px', overflowY: 'auto' }}>

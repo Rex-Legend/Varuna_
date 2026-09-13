@@ -18,7 +18,7 @@ const ALL_CITIES = ['Delhi', 'Mumbai', 'Bangalore', 'Kolkata', 'Jaipur', 'Chenna
 
 export default function TemperatureChart() {
   const [data, setData] = useState<any[]>([]);
-  const [horizon, setHorizon] = useState<'24h' | '7d' | '12m'>('24h');
+  const [horizon, setHorizon] = useState<'24h' | '48h' | '7d' | '12m'>('24h');
   const [metric, setMetric] = useState<'temp' | 'humidity'>('temp');
   const [activeCities, setActiveCities] = useState<string[]>(['Delhi', 'Mumbai', 'Bangalore', 'Kolkata']);
   const [loading, setLoading] = useState(false);
@@ -130,7 +130,7 @@ export default function TemperatureChart() {
           <div style={{ background: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '3px', borderRadius: '8px', display: 'flex', gap: '2px' }}>
             {[
               { key: '24h', label: '🟢 24H (Live)' },
-              { key: '7d', label: '🔵 7-Day (New)' },
+              { key: '48h', label: '🔵 48H (2-Day Max)' },
               { key: '12m', label: '📊 12M Baseline' }
             ].map(h => (
               <button

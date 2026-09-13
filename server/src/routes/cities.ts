@@ -24,15 +24,15 @@ router.get('/', (req, res) => {
     const nowIso = new Date().toISOString();
     const nowMs = Date.now();
 
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000; // at most 2 days (48 hours)
     const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
     const result = cities.map((c: any) => {
-        // Only consider readings within the maximum 7-day retention window
+        // Only consider readings within the maximum 2-day retention window
         const cityHourly = hourly.filter((h: any) => {
             if (h.city_id !== c.id) return false;
             const hTime = new Date(h.timestamp).getTime();
-            return !isNaN(hTime) && Math.abs(nowMs - hTime) <= SEVEN_DAYS_MS;
+            return !isNaN(hTime) && Math.abs(nowMs - hTime) <= TWO_DAYS_MS;
         });
         
         // Pick the reading closest to current time
@@ -83,6 +83,7 @@ router.get('/', (req, res) => {
             weather_code: latest?.weather_code ?? 1,
             is_live: freshness === 'LIVE',
             freshness,
+            is_within_2days: true,
             is_within_week: true,
             last_updated: nowIso
         };

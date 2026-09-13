@@ -4,7 +4,7 @@ import { scrapeDisasterAlerts } from '../collectors/web-scraper';
 
 const router = Router();
 
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000; // at most 2 days (48 hours)
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
 function filterAndEnrichAlerts(alerts: any[]) {
@@ -12,8 +12,8 @@ function filterAndEnrichAlerts(alerts: any[]) {
     return alerts
         .filter((a: any) => {
             const time = new Date(a.issued_at).getTime();
-            // Filter out any data older than 7 days
-            return !isNaN(time) && (nowMs - time) <= SEVEN_DAYS_MS;
+            // Filter out any data older than 2 days (48 hours)
+            return !isNaN(time) && (nowMs - time) <= TWO_DAYS_MS;
         })
         .map((a: any) => {
             const time = new Date(a.issued_at).getTime();
@@ -22,6 +22,7 @@ function filterAndEnrichAlerts(alerts: any[]) {
             return {
                 ...a,
                 freshness: isLive ? 'LIVE' : 'NEW',
+                is_within_2days: true,
                 is_within_week: true,
                 age_hours: Math.floor(ageMs / (1000 * 3600))
             };

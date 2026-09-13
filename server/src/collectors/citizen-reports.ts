@@ -58,14 +58,14 @@ router.post('/', async (req, res) => {
 router.get('/', (req, res) => {
     const reports = getAllData('FACT_CITIZEN_REPORTS');
     const cities = getAllData('DIM_CITIES');
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
     const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
     const nowMs = Date.now();
 
-    // Strict 7-day filter: discard any report older than 7 days
+    // Strict 2-day filter: discard any report older than 2 days (48 hours)
     const validReports = reports.filter(r => {
         const reportTime = new Date(r.timestamp).getTime();
-        return !isNaN(reportTime) && (nowMs - reportTime) <= SEVEN_DAYS_MS;
+        return !isNaN(reportTime) && (nowMs - reportTime) <= TWO_DAYS_MS;
     });
 
     const enriched = validReports.slice(-50).map(r => {
@@ -77,6 +77,7 @@ router.get('/', (req, res) => {
             ...r, 
             city_name: city ? city.city : 'Unknown',
             freshness,
+            is_within_2days: true,
             is_within_week: true
         };
     });
@@ -85,13 +86,13 @@ router.get('/', (req, res) => {
 
 router.get('/stats', (req, res) => {
     const reports = getAllData('FACT_CITIZEN_REPORTS');
-    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
     const nowMs = Date.now();
 
-    // Only aggregate over reports within the 7-day freshness window
+    // Only aggregate over reports within the 2-day freshness window (<= 48h)
     const validReports = reports.filter(r => {
         const reportTime = new Date(r.timestamp).getTime();
-        return !isNaN(reportTime) && (nowMs - reportTime) <= SEVEN_DAYS_MS;
+        return !isNaN(reportTime) && (nowMs - reportTime) <= TWO_DAYS_MS;
     });
 
     const byCondition: any = {};

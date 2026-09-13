@@ -13,6 +13,8 @@ const REALISTIC_STATION_TELEMETRY = [
     { city: 'Bangalore', temp: 26.5, humidity: 62, wind: 13.0, zone: 'Deccan Plateau' }
 ];
 
+const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000; // at most 2 days (48 hours)
+
 router.get('/', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -21,11 +23,17 @@ router.get('/', (req, res) => {
 
     // Send 3 initial live events immediately upon connection so user never sees an empty feed
     const sendBatch = () => {
+        const nowMs = Date.now();
         const posts = (getAllData('FACT_SOCIAL_MEDIA_POSTS') || []).filter(p => {
+            const ageMs = nowMs - new Date(p.posted_at).getTime();
+            if (isNaN(ageMs) || ageMs > TWO_DAYS_MS) return false;
             const check = validateMeteorologicalFactCheck(p.post_text || '', p.detected_city, p.detected_state);
             return check.isValid;
         });
-        const alerts = getAllData('FACT_DISASTER_ALERTS') || [];
+        const alerts = (getAllData('FACT_DISASTER_ALERTS') || []).filter(a => {
+            const ageMs = nowMs - new Date(a.issued_at).getTime();
+            return !isNaN(ageMs) && ageMs <= TWO_DAYS_MS;
+        });
         
         for (let i = 0; i < 3; i++) {
             if (posts.length > i) {
@@ -39,6 +47,7 @@ router.get('/', (req, res) => {
                     hasMedia: !!(p.has_photo || p.has_video),
                     timestamp: new Date(Date.now() - i * 45000).toISOString(),
                     freshness: 'LIVE',
+                    is_within_2days: true,
                     is_within_week: true,
                     geo_validation: 'VERIFIED_CLIMATIC_ZONE'
                 };
@@ -50,12 +59,18 @@ router.get('/', (req, res) => {
 
     // Continuous real-time streaming every 4 seconds
     const interval = setInterval(() => {
+        const nowMs = Date.now();
         const allPosts = getAllData('FACT_SOCIAL_MEDIA_POSTS') || [];
         const posts = allPosts.filter(p => {
+            const ageMs = nowMs - new Date(p.posted_at).getTime();
+            if (isNaN(ageMs) || ageMs > TWO_DAYS_MS) return false;
             const check = validateMeteorologicalFactCheck(p.post_text || '', p.detected_city, p.detected_state);
             return check.isValid;
         });
-        const alerts = getAllData('FACT_DISASTER_ALERTS') || [];
+        const alerts = (getAllData('FACT_DISASTER_ALERTS') || []).filter(a => {
+            const ageMs = nowMs - new Date(a.issued_at).getTime();
+            return !isNaN(ageMs) && ageMs <= TWO_DAYS_MS;
+        });
         
         let eventPayload;
         const roll = Math.random();

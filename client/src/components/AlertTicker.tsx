@@ -677,9 +677,9 @@ export default function AlertTicker() {
             Data Freshness:
           </span>
           {[
-            { key: 'ALL', label: `All Fresh Bulletins (<= 7d) • ${alerts.length}`, activeBg: '#1e293b', border: 'rgba(255,255,255,0.2)' },
+            { key: 'ALL', label: `All Fresh Bulletins (<= 2d) • ${alerts.length}`, activeBg: '#1e293b', border: 'rgba(255,255,255,0.2)' },
             { key: 'LIVE', label: `🟢 Strictly Live (< 2h) • ${liveCount}`, activeBg: '#15803d', border: 'rgba(34, 197, 94, 0.4)' },
-            { key: 'NEW', label: `🔵 Active This Week (2h - 7d) • ${newCount}`, activeBg: '#0369a1', border: 'rgba(56, 189, 248, 0.4)' }
+            { key: 'NEW', label: `🔵 Recent (2h - 2d) • ${newCount}`, activeBg: '#0369a1', border: 'rgba(56, 189, 248, 0.4)' }
           ].map(f => (
             <button
               key={f.key}
@@ -699,7 +699,7 @@ export default function AlertTicker() {
             </button>
           ))}
           <span
-            title="Policy: Exasol strictly purges and filters any alert data older than 7 days."
+            title="Policy: Exasol strictly purges and filters any alert data older than 2 days (48 hours)."
             style={{
               marginLeft: 'auto',
               padding: '3px 8px',
@@ -711,7 +711,7 @@ export default function AlertTicker() {
               fontWeight: 800
             }}
           >
-            🛡️ 7-Day Purge Guard Active
+            🛡️ 2-Day Purge Guard Active
           </span>
         </div>
       </div>

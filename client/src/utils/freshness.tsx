@@ -1,14 +1,17 @@
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
-export const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+export const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000; // strictly at most 2 days (48 hours)
+export const MAX_DATA_AGE_MS = TWO_DAYS_MS;
+export const SEVEN_DAYS_MS = TWO_DAYS_MS; // backwards-compatible alias, capped at 2 days
 export const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
 export interface FreshnessInfo {
   status: 'LIVE' | 'NEW' | 'EXPIRED';
   isLive: boolean;
   isNew: boolean;
-  isWithinWeek: boolean;
+  isWithinTwoDays: boolean;
+  isWithinWeek: boolean; // strictly <= 2 days
   ageMs: number;
   ageHours: number;
   ageDays: number;
@@ -23,8 +26,8 @@ export interface FreshnessInfo {
 /**
  * Evaluates the freshness of any given timestamp.
  * - LIVE: < 2 hours old (or streaming now)
- * - NEW: Between 2 hours and 7 days old
- * - EXPIRED: Older than 7 days (must be filtered out)
+ * - NEW: Between 2 hours and 2 days (48h) old
+ * - EXPIRED: Older than 2 days (must be filtered out completely)
  */
 export function getDataFreshness(timestampInput?: string | number | Date | null): FreshnessInfo {
   if (!timestampInput) {
@@ -32,6 +35,7 @@ export function getDataFreshness(timestampInput?: string | number | Date | null)
       status: 'LIVE',
       isLive: true,
       isNew: false,
+      isWithinTwoDays: true,
       isWithinWeek: true,
       ageMs: 0,
       ageHours: 0,
@@ -55,6 +59,7 @@ export function getDataFreshness(timestampInput?: string | number | Date | null)
       status: 'LIVE',
       isLive: true,
       isNew: false,
+      isWithinTwoDays: true,
       isWithinWeek: true,
       ageMs: 0,
       ageHours: 0,
@@ -71,7 +76,8 @@ export function getDataFreshness(timestampInput?: string | number | Date | null)
   const ageMs = Math.max(0, now - timeMs);
   const ageHours = Math.floor(ageMs / (1000 * 60 * 60));
   const ageDays = Math.floor(ageMs / (1000 * 60 * 60 * 24));
-  const isWithinWeek = ageMs <= SEVEN_DAYS_MS;
+  const isWithinTwoDays = ageMs <= TWO_DAYS_MS;
+  const isWithinWeek = isWithinTwoDays;
   const isLive = ageMs <= TWO_HOURS_MS;
 
   let timeAgo = 'Just now';
@@ -86,16 +92,17 @@ export function getDataFreshness(timestampInput?: string | number | Date | null)
     timeAgo = 'Recently';
   }
 
-  if (!isWithinWeek) {
+  if (!isWithinTwoDays) {
     return {
       status: 'EXPIRED',
       isLive: false,
       isNew: false,
+      isWithinTwoDays: false,
       isWithinWeek: false,
       ageMs,
       ageHours,
       ageDays,
-      label: 'EXPIRED (> 7d)',
+      label: 'EXPIRED (> 2d)',
       timeAgo,
       icon: '⏳',
       badgeBg: 'rgba(148, 163, 184, 0.15)',
@@ -109,6 +116,7 @@ export function getDataFreshness(timestampInput?: string | number | Date | null)
       status: 'LIVE',
       isLive: true,
       isNew: false,
+      isWithinTwoDays: true,
       isWithinWeek: true,
       ageMs,
       ageHours,
@@ -126,6 +134,7 @@ export function getDataFreshness(timestampInput?: string | number | Date | null)
     status: 'NEW',
     isLive: false,
     isNew: true,
+    isWithinTwoDays: true,
     isWithinWeek: true,
     ageMs,
     ageHours,
@@ -140,15 +149,17 @@ export function getDataFreshness(timestampInput?: string | number | Date | null)
 }
 
 /**
- * Filter out any items older than 7 days.
+ * Filter out any items older than 2 days (48 hours).
  */
-export function filterWithinWeek<T = any>(items: any[], getTimestamp: (item: any) => string | number | Date | undefined | null): T[] {
+export function filterWithinTwoDays<T = any>(items: any[], getTimestamp: (item: any) => string | number | Date | undefined | null): T[] {
   if (!Array.isArray(items)) return [];
   return items.filter(item => {
     const ts = getTimestamp(item);
-    return getDataFreshness(ts).isWithinWeek;
+    return getDataFreshness(ts).isWithinTwoDays;
   }) as T[];
 }
+
+export const filterWithinWeek = filterWithinTwoDays;
 
 /**
  * Clean, high-contrast Freshness Badge component with pulsing indicator for LIVE.
@@ -160,13 +171,13 @@ export const FreshnessBadge: React.FC<{
 }> = ({ timestamp, showTimeAgo = true, size = 'sm' }) => {
   const freshness = getDataFreshness(timestamp);
 
-  if (!freshness.isWithinWeek) return null; // never display expired items
+  if (!freshness.isWithinTwoDays) return null; // never display expired items older than 2 days
 
   const isSm = size === 'sm';
 
   return (
     <span
-      title={`Data Freshness: ${freshness.status} • Recorded ${freshness.timeAgo} • Valid within 7-day Exasol window`}
+      title={`Data Freshness: ${freshness.status} • Recorded ${freshness.timeAgo} • Valid within 48-hour (at most 2 days) window`}
       style={{
         display: 'inline-flex',
         alignItems: 'center',

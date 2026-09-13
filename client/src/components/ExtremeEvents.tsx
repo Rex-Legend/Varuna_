@@ -95,7 +95,7 @@ export default function ExtremeEvents() {
             ⚡ Top National Meteorological Extreme Events
           </h3>
           <p style={{ color: '#94a3b8', fontSize: '0.84rem', marginTop: '4px' }}>
-            Real-time severity scoring computed via Exasol analytical queries • <span style={{ color: '#38bdf8', fontWeight: 700 }}>Strict 7-Day Window (Live & New Only)</span>
+            Real-time severity scoring computed via Exasol analytical queries • <span style={{ color: '#38bdf8', fontWeight: 700 }}>Strict 2-Day Window (Live & New Only, &le;48h)</span>
           </p>
         </div>
 

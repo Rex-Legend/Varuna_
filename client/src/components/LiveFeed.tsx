@@ -46,8 +46,8 @@ export default function LiveFeed() {
           const raw = JSON.parse(e.data);
           const freshness = getDataFreshness(raw.timestamp);
           
-          // Strict 7-Day Filter: Filter out any event older than 7 days
-          if (!freshness.isWithinWeek) return;
+          // Strict 2-Day Filter: Filter out any event older than 2 days (48 hours)
+          if (!freshness.isWithinTwoDays) return;
 
           const newEvent: FeedEvent = {
             ...raw,
@@ -64,8 +64,8 @@ export default function LiveFeed() {
           } else {
             setEvents(prev => {
               if (prev.some(ev => ev.id === newEvent.id)) return prev;
-              // Ensure we only store valid within-week events
-              const updated = [newEvent, ...prev].filter(item => getDataFreshness(item.timestamp).isWithinWeek);
+              // Ensure we only store valid within-2-days events
+              const updated = [newEvent, ...prev].filter(item => getDataFreshness(item.timestamp).isWithinTwoDays);
               return updated.slice(0, 60);
             });
           }
@@ -145,10 +145,10 @@ export default function LiveFeed() {
   // Filter items
   const filteredEvents = events.filter(ev => {
     const fresh = getDataFreshness(ev.timestamp);
-    // Strict 7-day retention guard: filter out any data older than 7 days
-    if (!fresh.isWithinWeek) return false;
+    // Strict 2-day retention guard: filter out any data older than 2 days (48h)
+    if (!fresh.isWithinTwoDays) return false;
 
-    // Freshness filter: Live (< 2h) vs New (2h - 7d)
+    // Freshness filter: Live (< 2h) vs New (2h - 2d)
     if (freshnessFilter === 'LIVE' && !fresh.isLive) return false;
     if (freshnessFilter === 'NEW' && !fresh.isNew) return false;
 
@@ -173,7 +173,7 @@ export default function LiveFeed() {
   const liveEventsCount = events.filter(ev => getDataFreshness(ev.timestamp).isLive).length;
   const newEventsCount = events.filter(ev => {
     const f = getDataFreshness(ev.timestamp);
-    return f.isWithinWeek && !f.isLive;
+    return f.isWithinTwoDays && !f.isLive;
   }).length;
 
   const popularHashtags = ['#IMD', '#MumbaiRains', '#CycloneDana', '#DelhiHeatwave', '#AssamFloods', '#WeatherAlert'];
@@ -340,15 +340,15 @@ export default function LiveFeed() {
           ))}
         </div>
 
-        {/* Freshness Filter Pills & 7-Day Guard */}
+        {/* Freshness Filter Pills & 2-Day Guard */}
         <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: 700, marginRight: '4px' }}>
             FRESHNESS:
           </span>
           {[
-            { key: 'ALL', label: `All (<=7d) • ${events.length}`, bg: 'rgba(255,255,255,0.06)', activeBg: '#1e293b', border: 'rgba(255,255,255,0.2)' },
+            { key: 'ALL', label: `All (<=2d) • ${events.length}`, bg: 'rgba(255,255,255,0.06)', activeBg: '#1e293b', border: 'rgba(255,255,255,0.2)' },
             { key: 'LIVE', label: `🟢 Live (<2h) • ${liveEventsCount}`, bg: 'rgba(34, 197, 94, 0.1)', activeBg: '#15803d', border: 'rgba(34, 197, 94, 0.4)' },
-            { key: 'NEW', label: `🔵 New (2h-7d) • ${newEventsCount}`, bg: 'rgba(56, 189, 248, 0.1)', activeBg: '#0369a1', border: 'rgba(56, 189, 248, 0.4)' }
+            { key: 'NEW', label: `🔵 New (2h-2d) • ${newEventsCount}`, bg: 'rgba(56, 189, 248, 0.1)', activeBg: '#0369a1', border: 'rgba(56, 189, 248, 0.4)' }
           ].map(f => (
             <button
               key={f.key}
@@ -368,7 +368,7 @@ export default function LiveFeed() {
             </button>
           ))}
           <span 
-            title="Policy: All records older than 7 days are automatically purged. All events are fact-checked against regional climatic zones."
+            title="Policy: All records older than 2 days (48 hours) are automatically purged and filtered from streams. All events are fact-checked against regional climatic zones."
             style={{
               padding: '4px 10px',
               borderRadius: '8px',
@@ -379,7 +379,7 @@ export default function LiveFeed() {
               fontWeight: 800
             }}
           >
-            🛡️ 7-Day Guard • 🔬 Climate Fact-Checked
+            🛡️ 2-Day Guard • 🔬 Climate Fact-Checked
           </span>
         </div>
       </div>
