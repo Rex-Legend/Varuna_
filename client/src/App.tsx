@@ -78,10 +78,10 @@ function App() {
       <header className="weather-header">
         <div className="header-inner">
           <a href="#" className="weather-brand" onClick={(e) => { e.preventDefault(); setActiveTab('overview'); }}>
-            <div className="brand-weather-badge">IMD 🌦️</div>
+            <div className="brand-weather-badge">VARUNA 🌦️</div>
             <div className="brand-title">
-              <h1>India National Weather Big Data Platform</h1>
-              <span>Real-Time Meteorological Telemetry & Multi-Source Intelligence</span>
+              <h1>Varuna — National Weather Big Data Platform</h1>
+              <span>Exasol In-Memory Meteorological Telemetry & Multi-Source Intelligence</span>
             </div>
           </a>
 

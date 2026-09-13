@@ -26,15 +26,11 @@ const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
     console.log(`
-      _   _       _   _                   _ 
-     | \\ | |     | | (_)                 | |
-     |  \\| | __ _| |_ _  ___  _ __   __ _| |
-     | . \` |/ _\` | __| |/ _ \\| '_ \\ / _\` | |
-     | |\\  | (_| | |_| | (_) | | | | (_| | |
-     \\_| \\_/\\__,_|\\__|_|\\___/|_| |_|\\__,_|_|
-                                            
-      Weather Analytics Platform Started!
-      Port: ${PORT}
+      =======================================================
+      🌊 VARUNA (वरुण) — National Weather Big Data Platform
+      ⚡ Engine: Exasol In-Memory Columnar Database
+      📡 Port: ${PORT}
+      =======================================================
     `);
     
     startCollectors();
